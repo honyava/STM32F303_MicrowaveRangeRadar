@@ -26,7 +26,6 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-#define SIZE_BUFFER_ADC 512
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -57,8 +56,7 @@ TIM_HandleTypeDef htim8;
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
-volatile uint32_t adc[SIZE_BUFFER_ADC] = {0,};
-volatile uint16_t adc_test[4] = {0,};
+uint32_t volatile BUFF_ADC1_2[SIZE_BUFFER_ADC];
 int test_vec = 0;
 /* USER CODE END PV */
 
@@ -114,23 +112,29 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  //MX_OPAMP4_Init();
-  //MX_DAC_Init();
-  //MX_OPAMP1_Init();
-  //MX_OPAMP2_Init();
+  MX_OPAMP1_Init();
+  MX_OPAMP2_Init();
   MX_OPAMP3_Init();
+	MX_OPAMP4_Init();
+	//MX_DAC_Init();
   MX_USART1_UART_Init();
-//  MX_ADC3_Init();
-  MX_TIM8_Init();
-  MX_TIM4_Init();
-	
-	HAL_OPAMP_Start(&hopamp3);
 //  MX_ADC1_Init();
 //  MX_ADC2_Init();
-//  MX_ADC4_Init();
+//  MX_ADC4_Init();	
+//  MX_ADC3_Init();
+  //MX_TIM8_Init();
+  MX_TIM4_Init();
+	
+	TIM8_Init();
+	
+	HAL_OPAMP_Start(&hopamp1);
+	HAL_OPAMP_Start(&hopamp2);
+	HAL_OPAMP_Start(&hopamp3);
+	HAL_OPAMP_Start(&hopamp4);
+	
+	//HAL_TIM_Base_Start_IT(&htim8); // Start TIM8 for triggering ADC	
+	ADC1_2_Dual_Init();	
   /* USER CODE BEGIN 2 */
-//	HAL_ADCEx_Calibration_Start(&hadc3, ADC_SINGLE_ENDED); // Calibration ADC3 and ADC4 in Dual mode
-//	HAL_ADCEx_Calibration_Start(&hadc4, ADC_SINGLE_ENDED);
 //	HAL_ADCEx_Calibration_Start(&hadc4, ADC_SINGLE_ENDED);
 //	HAL_ADCEx_Calibration_Start(&hadc3, ADC_SINGLE_ENDED);
 //	HAL_ADCEx_Calibration_Start(&hadc2, ADC_SINGLE_ENDED);
@@ -139,7 +143,6 @@ int main(void)
 	//HAL_ADC_Start(&hadc3);
 	//HAL_ADC_Start(&hadc4);
 	//HAL_TIM_OC_Start(&htim4, TIM_CHANNEL_1);
-	HAL_TIM_Base_Start_IT(&htim8); // Start TIM8 for triggering ADC
 	//HAL_ADCEx_MultiModeStart_DMA(&hadc3, (uint32_t*)&adc, SIZE_BUFFER_ADC);
   /* USER CODE END 2 */
 
@@ -147,15 +150,18 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-//		      HAL_ADC_Start(&hadc4); // ????????? ?????????????? ??????? ???
+		
+		
+		
+////		      HAL_ADC_Start(&hadc4); // ????????? ?????????????? ??????? ???
 //					HAL_ADC_Start(&hadc3); // ????????? ?????????????? ??????? ???
-//					HAL_ADC_Start(&hadc2); // ????????? ?????????????? ??????? ???
-//					HAL_ADC_Start(&hadc1); // ????????? ?????????????? ??????? ???
-//          HAL_Delay(1); // ??????? ????????? ??????????????
-//          adc_test[3] = HAL_ADC_GetValue(&hadc4);
+////					HAL_ADC_Start(&hadc2); // ????????? ?????????????? ??????? ???
+////					HAL_ADC_Start(&hadc1); // ????????? ?????????????? ??????? ???
+//				  HAL_Delay(1); // ??????? ????????? ??????????????
+////          adc_test[3] = HAL_ADC_GetValue(&hadc4);
 //					adc_test[2] = HAL_ADC_GetValue(&hadc3);
-//					adc_test[1] = HAL_ADC_GetValue(&hadc2);
-//					adc_test[0] = HAL_ADC_GetValue(&hadc1);
+////					adc_test[1] = HAL_ADC_GetValue(&hadc2);
+////					adc_test[0] = HAL_ADC_GetValue(&hadc1);
 //					HAL_Delay(1);
 		test_vec++;
 		if (test_vec == 1000) test_vec = 0;

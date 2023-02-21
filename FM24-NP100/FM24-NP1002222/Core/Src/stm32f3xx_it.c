@@ -199,5 +199,23 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /* USER CODE BEGIN 1 */
+void DMA1_Channel1_IRQHandler(void) // for ADC1_2 (dual)
+{
+	if(READ_BIT(DMA1->ISR, DMA_ISR_TCIF1))
+	{
+		DMA1->ISR = DMA_ISR_TCIF1;
+//		ADC1_data = 0;
+//		flag_DMA_ADC1_2 = 1;
+	}
+}
+
+void TIM8_UP_IRQHandler(void) // for ADC1_2 (dual)
+{
+	if(READ_BIT(TIM8->SR, TIM_SR_UIF)) // check the flag of interrupt
+	{
+		TIM8->SR &= ~ TIM_SR_UIF; // Resetting the flag of interrupt
+	}
+}
+
 
 /* USER CODE END 1 */

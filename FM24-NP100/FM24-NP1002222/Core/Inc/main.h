@@ -32,6 +32,7 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "core_cm4.h"
+#define SIZE_BUFFER_ADC 512
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -53,6 +54,10 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
+void ADC1_2_Dual_Init(void);
+void DMA1_Channel1_IRQHandler(void);
+void TIM8_UP_IRQHandler(void);
+void TIM8_Init(void);
 
 /* USER CODE END EFP */
 
