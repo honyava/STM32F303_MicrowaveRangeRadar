@@ -125,6 +125,7 @@ int main(void)
   //MX_TIM8_Init();
   MX_TIM4_Init();
 	
+  /* USER CODE BEGIN 2 */
 	TIM8_Init();
 	
 	HAL_OPAMP_Start(&hopamp1);
@@ -132,18 +133,7 @@ int main(void)
 	HAL_OPAMP_Start(&hopamp3);
 	HAL_OPAMP_Start(&hopamp4);
 	
-	//HAL_TIM_Base_Start_IT(&htim8); // Start TIM8 for triggering ADC	
 	ADC1_2_Dual_Init();	
-  /* USER CODE BEGIN 2 */
-//	HAL_ADCEx_Calibration_Start(&hadc4, ADC_SINGLE_ENDED);
-//	HAL_ADCEx_Calibration_Start(&hadc3, ADC_SINGLE_ENDED);
-//	HAL_ADCEx_Calibration_Start(&hadc2, ADC_SINGLE_ENDED);
-//	HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED);
-	
-	//HAL_ADC_Start(&hadc3);
-	//HAL_ADC_Start(&hadc4);
-	//HAL_TIM_OC_Start(&htim4, TIM_CHANNEL_1);
-	//HAL_ADCEx_MultiModeStart_DMA(&hadc3, (uint32_t*)&adc, SIZE_BUFFER_ADC);
   /* USER CODE END 2 */
 
   /* Infinite loop */

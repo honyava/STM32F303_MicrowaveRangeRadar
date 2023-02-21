@@ -17,7 +17,7 @@ void ADC1_2_Dual_Init(void)
 	/////////// Setting ADC1
 	CLEAR_BIT(ADC1->CFGR, ADC_CFGR_RES_0);
 	CLEAR_BIT(ADC1->CFGR, ADC_CFGR_RES_1); // Resolution 12 bit
-/*mb*/	ADC1->SQR1 = 1; // 1 channel for first conversation
+  ADC1->SQR1 |= (3 << ADC_SQR1_SQ1_Pos); // 3 channel for first conversation (PA2)
 	CLEAR_BIT(ADC1->CFGR, ADC_CFGR_ALIGN); // Right alignment
 	MODIFY_REG(ADC1->CFGR, ADC_CFGR_EXTSEL, 7 << ADC_CFGR_EXTSEL_Pos); // Externel event Timer 8 TRGO
 	MODIFY_REG(ADC1->CFGR, ADC_CFGR_EXTEN, 1 << ADC_CFGR_EXTEN_Pos); //External TRG enable, Rising edge
@@ -27,15 +27,18 @@ void ADC1_2_Dual_Init(void)
 	/////////// Setting ADC2
 	CLEAR_BIT(ADC2->CFGR, ADC_CFGR_RES_0);
 	CLEAR_BIT(ADC2->CFGR, ADC_CFGR_RES_1); // Resolution 12 bit
-  ADC2->SQR2 = 0;
-	ADC2->SQR3 = 0; // PA0 channel for first conversation
+	ADC2->SQR1 |= (3 << ADC_SQR1_SQ1_Pos); // 3 channel for first conversation (PA6)
 	ADC2->CFGR |=  ADC_CFGR_EXTEN;
 	ADC2->CFGR |=  ADC_CFGR_EXTSEL;
 	CLEAR_BIT(ADC2->CFGR, ADC_CFGR_ALIGN); // Right alignment
 	MODIFY_REG(ADC2->SMPR2, ADC_SMPR2_SMP10, 1 << ADC_SMPR2_SMP10_Pos); // Channel 0, 15 cycles for conversation
   ////////////// Dual Start
+	ADC1->CR |= ADC_CR_ADCAL; //Calibration
+	while ((ADC1->CR & ADC_CR_ADCAL) != 0); //wait end of calibration
+	ADC2->CR |= ADC_CR_ADCAL; //Calibration
+	while ((ADC2->CR & ADC_CR_ADCAL) != 0); //wait end of calibration		
 	SET_BIT(ADC1->CR, ADC_CR_ADEN);    // Enable ADC
-	SET_BIT(ADC1->CR, ADC_CR_ADSTART); //  Starts conversion of regular channels
+	SET_BIT(ADC1->CR, ADC_CR_ADSTART); // Starts conversion of regular channels
 	SET_BIT(ADC2->CR, ADC_CR_ADEN);    // Enable ADC
 	// Init DMA
 	DMA1_Channel1->CPAR = (uint32_t)&ADC12_COMMON->CDR; // Adress of data
@@ -46,8 +49,8 @@ void ADC1_2_Dual_Init(void)
 	DMA1_Channel1->CCR &= ~(1 << DMA_CCR_PL_Pos); // Set low priority level
 	SET_BIT(DMA1_Channel1->CCR, DMA_CCR_MINC); // incrementing memmory addres
 	CLEAR_BIT(DMA1_Channel1->CCR, DMA_CCR_PINC); // disabled incrementing perephiral addres
-	DMA1_Channel1->CCR |= (1 << DMA_CCR_PSIZE_Pos); //periphiral data size 16b (half-word)
-	DMA1_Channel1->CCR |= (1 << DMA_CCR_MSIZE_Pos); //memmory data size 16b (half-word)
+	DMA1_Channel1->CCR |= (2 << DMA_CCR_PSIZE_Pos); //periphiral data size 16b (half-word)
+	DMA1_Channel1->CCR |= (2 << DMA_CCR_MSIZE_Pos); //memmory data size 16b (half-word)
 //	CLEAR_BIT(DMA1_Channel1->CCR, DMA_CCR_CHSEL); // enable channel 0
 	DMA1_Channel1->CNDTR |= (SIZE_BUFFER_ADC << DMA_CNDTR_NDT_Pos);
 	SET_BIT(DMA1_Channel1->CCR, DMA_CCR_EN); // Enable DMA

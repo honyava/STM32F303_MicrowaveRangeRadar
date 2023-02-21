@@ -204,8 +204,6 @@ void DMA1_Channel1_IRQHandler(void) // for ADC1_2 (dual)
 	if(READ_BIT(DMA1->ISR, DMA_ISR_TCIF1))
 	{
 		DMA1->ISR = DMA_ISR_TCIF1;
-//		ADC1_data = 0;
-//		flag_DMA_ADC1_2 = 1;
 	}
 }
 
