@@ -55,9 +55,10 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-
+extern UART_HandleTypeDef huart1;
 /* USER CODE BEGIN EV */
-
+extern uint8_t flag_dma;
+extern uint8_t flag_tx;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -198,12 +199,28 @@ void SysTick_Handler(void)
 /* please refer to the startup file (startup_stm32f3xx.s).                    */
 /******************************************************************************/
 
+/**
+  * @brief This function handles USART1 global interrupt / USART1 wake-up interrupt through EXTI line 25.
+  */
+void USART1_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART1_IRQn 0 */
+
+  /* USER CODE END USART1_IRQn 0 */
+  HAL_UART_IRQHandler(&huart1);
+  /* USER CODE BEGIN USART1_IRQn 1 */
+
+  /* USER CODE END USART1_IRQn 1 */
+}
+
 /* USER CODE BEGIN 1 */
 void DMA1_Channel1_IRQHandler(void) // for ADC1_2 (dual)
 {
 	if(READ_BIT(DMA1->ISR, DMA_ISR_TCIF1))
 	{
 		DMA1->IFCR = DMA_IFCR_CTCIF1; // Resetting the flag of interrupt
+		flag_dma = 1;
+		flag_tx = 0;
 		HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
 	}
 }
@@ -214,6 +231,13 @@ void TIM8_UP_IRQHandler(void) // for ADC1_2 (dual)
 	{
 		TIM8->SR &= ~ TIM_SR_UIF; // Resetting the flag of interrupt
 	}
+}
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+	if(huart == &huart1)
+	{
+		flag_tx = 1;
+	}     
 }
 
 

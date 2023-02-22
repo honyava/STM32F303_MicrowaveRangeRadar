@@ -60,7 +60,7 @@ void ADC1_2_Dual_Init(void);
 void DMA1_Channel1_IRQHandler(void);
 void TIM8_UP_IRQHandler(void);
 void TIM8_Init(void);
-
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
