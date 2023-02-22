@@ -22,8 +22,6 @@ fm24-np1002222\stm32f3xx_hal_opamp_ex.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm
 fm24-np1002222\stm32f3xx_hal_opamp_ex.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_dma.h
 fm24-np1002222\stm32f3xx_hal_opamp_ex.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_dma_ex.h
 fm24-np1002222\stm32f3xx_hal_opamp_ex.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_cortex.h
-fm24-np1002222\stm32f3xx_hal_opamp_ex.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_adc.h
-fm24-np1002222\stm32f3xx_hal_opamp_ex.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_adc_ex.h
 fm24-np1002222\stm32f3xx_hal_opamp_ex.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_dac.h
 fm24-np1002222\stm32f3xx_hal_opamp_ex.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_dac_ex.h
 fm24-np1002222\stm32f3xx_hal_opamp_ex.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_flash.h
@@ -34,7 +32,5 @@ fm24-np1002222\stm32f3xx_hal_opamp_ex.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm
 fm24-np1002222\stm32f3xx_hal_opamp_ex.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_opamp_ex.h
 fm24-np1002222\stm32f3xx_hal_opamp_ex.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_pwr.h
 fm24-np1002222\stm32f3xx_hal_opamp_ex.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_pwr_ex.h
-fm24-np1002222\stm32f3xx_hal_opamp_ex.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_tim.h
-fm24-np1002222\stm32f3xx_hal_opamp_ex.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_tim_ex.h
 fm24-np1002222\stm32f3xx_hal_opamp_ex.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_uart.h
 fm24-np1002222\stm32f3xx_hal_opamp_ex.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_uart_ex.h

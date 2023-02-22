@@ -203,7 +203,8 @@ void DMA1_Channel1_IRQHandler(void) // for ADC1_2 (dual)
 {
 	if(READ_BIT(DMA1->ISR, DMA_ISR_TCIF1))
 	{
-		DMA1->ISR = DMA_ISR_TCIF1;
+		DMA1->IFCR = DMA_IFCR_CTCIF1; // Resetting the flag of interrupt
+		HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
 	}
 }
 
