@@ -51,7 +51,9 @@ UART_HandleTypeDef huart1;
 uint32_t volatile BUFF_ADC1_2[SIZE_BUFFER_ADC];
 uint8_t flag_dma = 0;
 uint8_t flag_tx = 0;
+uint8_t flag_rx = 0;
 int test_vec = 0;
+char UART_command[4] = {0,};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -69,6 +71,12 @@ static void MX_USART1_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+typedef enum
+{
+	Reset = 0,
+	Start = 1,
+	Stop = 2,
+}StateStatus;
 
 /* USER CODE END 0 */
 
@@ -114,7 +122,7 @@ int main(void)
 	HAL_OPAMP_Start(&hopamp4);
 	
 	ADC1_2_Dual_Init();	
-//	HAL_UART_Init(&huart1);
+	HAL_UART_Receive_IT(&huart1, (uint8_t*)UART_command, 4);
 	TIM8_Init();
 
   /* USER CODE END 2 */
@@ -125,24 +133,28 @@ int main(void)
   {
 
 		test_vec++;
-		if (flag_dma == 1)
+		if(flag_rx == 1)
 		{
-			if (flag_tx == 0)
+			HAL_UART_Receive_IT(&huart1, (uint8_t*)UART_command, 4);
+			if (flag_dma == 1)
 			{
-				HAL_UART_Transmit_IT(&huart1, (uint8_t*)BUFF_ADC1_2, SIZE_BUFFER_ADC*4);
+				if (flag_tx == 0)
+				{
+					HAL_UART_Transmit_IT(&huart1, (uint8_t*)BUFF_ADC1_2, SIZE_BUFFER_ADC*4);
 				
-			}
+				}
 			//HAL_UART_Transmit_IT(&huart1, (uint8_t*)BUFF_ADC1_2, SIZE_BUFFER_ADC*4);
 			//HAL_UART_Transmit(&huart1, (uint8_t*)BUFF_ADC1_2, 4, 1000);
-			flag_dma = 0;
+				flag_dma = 0;
 			//flag_tx = 0;
 			//HAL_UART_Transmit
+			}
 		}
 		
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  }
+	}
   /* USER CODE END 3 */
 }
 

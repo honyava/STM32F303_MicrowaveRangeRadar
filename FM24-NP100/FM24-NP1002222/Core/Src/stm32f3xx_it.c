@@ -59,6 +59,7 @@ extern UART_HandleTypeDef huart1;
 /* USER CODE BEGIN EV */
 extern uint8_t flag_dma;
 extern uint8_t flag_tx;
+extern uint8_t flag_rx;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -238,6 +239,14 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 	{
 		flag_tx = 1;
 	}     
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+	if(huart == &huart1)
+	{
+		flag_rx = 1;
+	}
 }
 
 
