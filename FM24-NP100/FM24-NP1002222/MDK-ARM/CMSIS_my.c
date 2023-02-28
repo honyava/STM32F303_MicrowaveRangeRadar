@@ -18,7 +18,8 @@ void ADC1_2_Dual_Init(void)
 	CLEAR_BIT(ADC1->CFGR, ADC_CFGR_RES_0);
 	CLEAR_BIT(ADC1->CFGR, ADC_CFGR_RES_1); // Resolution 12 bit
   ADC1->SQR1 |= (3 << ADC_SQR1_SQ1_Pos); // 3 channel for first conversation (PA2)
-	CLEAR_BIT(ADC1->CFGR, ADC_CFGR_ALIGN); // Right alignment
+//	CLEAR_BIT(ADC1->CFGR, ADC_CFGR_ALIGN); // Right alignment
+	SET_BIT(ADC1->CFGR, ADC_CFGR_ALIGN); // Left alignment
 	//SET_BIT(ADC1->CFGR, ADC_CFGR_CONT);
 	MODIFY_REG(ADC1->CFGR, ADC_CFGR_EXTSEL, 7 << ADC_CFGR_EXTSEL_Pos); // Externel event Timer 8 TRGO
 	MODIFY_REG(ADC1->CFGR, ADC_CFGR_EXTEN, 1 << ADC_CFGR_EXTEN_Pos); //External TRG enable, Rising edge	
@@ -31,7 +32,8 @@ void ADC1_2_Dual_Init(void)
 	ADC2->SQR1 |= (3 << ADC_SQR1_SQ1_Pos); // 3 channel for first conversation (PA6)
 //	ADC2->CFGR |=  ADC_CFGR_EXTEN;
 //	ADC2->CFGR |=  ADC_CFGR_EXTSEL;
-	CLEAR_BIT(ADC2->CFGR, ADC_CFGR_ALIGN); // Right alignment
+//	CLEAR_BIT(ADC2->CFGR, ADC_CFGR_ALIGN); // Right alignment
+	SET_BIT(ADC2->CFGR, ADC_CFGR_ALIGN); // Left alignment
 	MODIFY_REG(ADC2->SMPR2, ADC_SMPR1_SMP3, 1 << ADC_SMPR1_SMP3_Pos); // Channel 3, 15 cycles for conversation
   ////////////// Dual Start
 	ADC1->CR |= ADC_CR_ADCAL; //Calibration
