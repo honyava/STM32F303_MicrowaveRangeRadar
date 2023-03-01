@@ -47,7 +47,7 @@ extern "C" {
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
-#define SIZE_BUFFER_ADC 500
+#define SIZE_BUFFER_ADC 10
 
 
 /* USER CODE END EM */

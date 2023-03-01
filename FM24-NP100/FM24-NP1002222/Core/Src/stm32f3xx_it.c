@@ -60,6 +60,8 @@ extern UART_HandleTypeDef huart1;
 extern uint8_t flag_dma;
 extern uint8_t flag_tx;
 extern uint8_t flag_rx;
+extern uint32_t volatile BUFF_ADC1_2[SIZE_BUFFER_ADC];
+extern uint32_t volatile BUFF_ADC1_2_half[SIZE_BUFFER_ADC/2];
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -217,12 +219,26 @@ void USART1_IRQHandler(void)
 /* USER CODE BEGIN 1 */
 void DMA1_Channel1_IRQHandler(void) // for ADC1_2 (dual)
 {
-	if(READ_BIT(DMA1->ISR, DMA_ISR_TCIF1))
+	if(READ_BIT(DMA1->ISR, DMA_ISR_TCIF1)) // transfer complete
 	{
 		DMA1->IFCR = DMA_IFCR_CTCIF1; // Resetting the flag of interrupt
+		for(uint16_t i = SIZE_BUFFER_ADC/2; i < SIZE_BUFFER_ADC; i++)
+		{
+			BUFF_ADC1_2_half[i - SIZE_BUFFER_ADC/2] = BUFF_ADC1_2[i];
+		}
 		flag_dma = 1;
 		flag_tx = 0;
 		HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+	}
+	if(READ_BIT(DMA1->ISR, DMA_ISR_HTIF1)) // half transfer complete
+	{
+		DMA1->IFCR = DMA_IFCR_CHTIF1; // Resetting the flag of interrupt
+		for(uint16_t i = 0; i < SIZE_BUFFER_ADC/2; i++)
+		{
+			BUFF_ADC1_2_half[i] = BUFF_ADC1_2[i];
+		}
+		flag_dma = 1;
+		flag_tx = 0;
 	}
 }
 

@@ -47,6 +47,7 @@ void ADC1_2_Dual_Init(void)
 	DMA1_Channel1->CPAR = (uint32_t)&ADC12_COMMON->CDR; // Adress of data
   DMA1_Channel1->CMAR =(uint32_t)&BUFF_ADC1_2[0]; // Adress of buffer
 	SET_BIT(DMA1_Channel1->CCR, DMA_CCR_TCIE); // Interrupt enable, complete transfer
+	SET_BIT(DMA1_Channel1->CCR, DMA_CCR_HTIE); // Interrupt enable, half transfer
 	CLEAR_BIT(DMA1_Channel1->CCR, DMA_CCR_DIR); // perifheral to memmory
 	SET_BIT(DMA1_Channel1->CCR, DMA_CCR_CIRC); // circual mode enable
 	DMA1_Channel1->CCR &= ~(1 << DMA_CCR_PL_Pos); // Set low priority level
@@ -74,7 +75,7 @@ void TIM8_Init(void)
 	
 //	MODIFY_REG(TIM8->CR2, TIM_CR2_MMS2, 2 << TIM_CR2_MMS2_Pos);
 	MODIFY_REG(TIM8->CR2, TIM_CR2_MMS, 2 << TIM_CR2_MMS_Pos); // Update Event for ADC1
-	SET_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM3 enable
+//	SET_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 enable
 //	NVIC_SetPriority(1, TIM8_UP_IRQn);
 	NVIC_EnableIRQ(TIM8_UP_IRQn);
 }

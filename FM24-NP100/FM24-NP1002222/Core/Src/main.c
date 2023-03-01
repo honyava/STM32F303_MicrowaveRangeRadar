@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -30,6 +30,10 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define SIZE_UART_RX 4
+#define START_TX "START"
+#define STOP_TX "STOP"
+#define RESET_TX "RESET"
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -49,11 +53,12 @@ UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 uint32_t volatile BUFF_ADC1_2[SIZE_BUFFER_ADC];
+uint32_t volatile BUFF_ADC1_2_half[SIZE_BUFFER_ADC/2];
 uint8_t flag_dma = 0;
 uint8_t flag_tx = 0;
 uint8_t flag_rx = 0;
 int test_vec = 0;
-char UART_command[4] = {0,};
+char UART_command[SIZE_UART_RX] = {0,};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -71,12 +76,12 @@ static void MX_USART1_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-typedef enum
-{
-	Reset = 0,
-	Start = 1,
-	Stop = 2,
-}StateStatus;
+//typedef enum
+//{
+//	Reset = 0,
+//	Start = 1,
+//	Stop = 2,
+//}StateStatus;
 
 /* USER CODE END 0 */
 
@@ -122,8 +127,11 @@ int main(void)
 	HAL_OPAMP_Start(&hopamp4);
 	
 	ADC1_2_Dual_Init();	
-	HAL_UART_Receive_IT(&huart1, (uint8_t*)UART_command, 4);
+	HAL_UART_Receive_IT(&huart1, (uint8_t*)UART_command, SIZE_UART_RX);
+	//__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
 	TIM8_Init();
+	
+	
 
   /* USER CODE END 2 */
 
@@ -135,19 +143,26 @@ int main(void)
 		test_vec++;
 		if(flag_rx == 1)
 		{
-			HAL_UART_Receive_IT(&huart1, (uint8_t*)UART_command, 4);
-			if (flag_dma == 1)
+			HAL_UART_Receive_IT(&huart1, (uint8_t*)UART_command, SIZE_UART_RX);
+			if (strncmp (UART_command, START_TX, 4) == 0)
 			{
-				if (flag_tx == 0)
+				SET_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 enable
+				if (flag_dma == 1)
 				{
-					HAL_UART_Transmit_IT(&huart1, (uint8_t*)BUFF_ADC1_2, SIZE_BUFFER_ADC*4);
-				
+					if (flag_tx == 0)
+					{
+						HAL_UART_Transmit_IT(&huart1, (uint8_t*)BUFF_ADC1_2_half, SIZE_BUFFER_ADC*2);
+					}
+					flag_dma = 0;
 				}
-			//HAL_UART_Transmit_IT(&huart1, (uint8_t*)BUFF_ADC1_2, SIZE_BUFFER_ADC*4);
-			//HAL_UART_Transmit(&huart1, (uint8_t*)BUFF_ADC1_2, 4, 1000);
-				flag_dma = 0;
-			//flag_tx = 0;
-			//HAL_UART_Transmit
+			}
+			else if(strncmp (UART_command, STOP_TX, 4) == 0)
+			{
+				CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 disable
+			}
+			else if(strncmp (UART_command, RESET_TX, 4) == 0)
+			{
+				HAL_NVIC_SystemReset();
 			}
 		}
 		
@@ -171,12 +186,13 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
-  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL16;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL8;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -411,6 +427,7 @@ static void MX_GPIO_Init(void)
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
