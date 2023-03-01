@@ -62,6 +62,10 @@ extern uint8_t flag_tx;
 extern uint8_t flag_rx;
 extern uint32_t volatile BUFF_ADC1_2[SIZE_BUFFER_ADC];
 extern uint32_t volatile BUFF_ADC1_2_half[SIZE_BUFFER_ADC/2];
+extern uint8_t UART_command[SIZE_UART_RX];
+extern uint8_t firstByteWait;
+
+uint16_t timeOut = 0;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -191,7 +195,21 @@ void SysTick_Handler(void)
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
-
+	if(firstByteWait != 0)
+	{
+		timeOut = 0; 
+	}
+  else 
+	{
+    timeOut++;
+    if( timeOut >= 50 )
+		{
+      HAL_UART_AbortReceive_IT(&huart1);
+      firstByteWait = 1; 
+      timeOut = 0;
+      HAL_UART_Receive_IT(&huart1, UART_command, 1);
+    }
+  }
   /* USER CODE END SysTick_IRQn 1 */
 }
 
@@ -261,7 +279,12 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	if(huart == &huart1)
 	{
-		flag_rx = 1;
+		if (firstByteWait != 0)
+		{	
+			flag_rx = 1;
+			firstByteWait=0;
+			HAL_UART_Receive_IT(&huart1, UART_command+1, SIZE_UART_RX-1);
+		}
 	}
 }
 

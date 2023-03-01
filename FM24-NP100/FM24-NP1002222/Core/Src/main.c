@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <string.h>
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -30,10 +30,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define SIZE_UART_RX 4
-#define START_TX "START"
-#define STOP_TX "STOP"
-#define RESET_TX "RESET"
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -58,7 +55,8 @@ uint8_t flag_dma = 0;
 uint8_t flag_tx = 0;
 uint8_t flag_rx = 0;
 int test_vec = 0;
-char UART_command[SIZE_UART_RX] = {0,};
+uint8_t UART_command[SIZE_UART_RX] = {0,};
+uint8_t firstByteWait = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -98,6 +96,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+
   HAL_Init();
 
   /* USER CODE BEGIN Init */
@@ -127,43 +126,48 @@ int main(void)
 	HAL_OPAMP_Start(&hopamp4);
 	
 	ADC1_2_Dual_Init();	
-	HAL_UART_Receive_IT(&huart1, (uint8_t*)UART_command, SIZE_UART_RX);
-	//__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
 	TIM8_Init();
-	
-	
-
+	firstByteWait = 1;
+	HAL_UART_Receive_IT(&huart1, UART_command, 1);
+	//HAL_UART_Transmit_IT(&huart1, (uint8_t*)"STOP", 5);
+//	HAL_UART_Transmit_IT(&huart1, (uint8_t*)"STOP", 4);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-
-		test_vec++;
-		if(flag_rx == 1)
+	
+		//test_vec++;
+		//HAL_UART_Transmit_IT(&huart1, (uint8_t*)"HELLO", 5);
+//		HAL_UART_Receive_IT(&huart1, (uint8_t*)UART_command, SIZE_UART_RX);	
+		if (strncmp ((char*)UART_command, START_TX, 4) == 0) //to do
 		{
-			HAL_UART_Receive_IT(&huart1, (uint8_t*)UART_command, SIZE_UART_RX);
-			if (strncmp (UART_command, START_TX, 4) == 0)
+			SET_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 enable
+			if (flag_dma == 1)
 			{
-				SET_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 enable
-				if (flag_dma == 1)
+				if (flag_tx == 0)
 				{
-					if (flag_tx == 0)
-					{
-						HAL_UART_Transmit_IT(&huart1, (uint8_t*)BUFF_ADC1_2_half, SIZE_BUFFER_ADC*2);
-					}
-					flag_dma = 0;
+					HAL_UART_Transmit_IT(&huart1, (uint8_t*)BUFF_ADC1_2_half, SIZE_BUFFER_ADC*2);
 				}
+				flag_dma = 0;
 			}
-			else if(strncmp (UART_command, STOP_TX, 4) == 0)
-			{
-				CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 disable
-			}
-			else if(strncmp (UART_command, RESET_TX, 4) == 0)
-			{
-				HAL_NVIC_SystemReset();
-			}
+		}
+		else if(strncmp ((char*)UART_command, STOP_TX, 4) == 0)
+		{
+			CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 disable
+		}
+		else if(strncmp ((char*)UART_command, RESET_TX, 4) == 0)
+		{
+			HAL_NVIC_SystemReset();
+		}
+		else if(strncmp ((char*)UART_command, TEST_TX, 4) == 0)
+		{
+			HAL_UART_Transmit_IT(&huart1, (uint8_t*)"TEST", 4);
+		}
+		else
+		{
+			//memset(UART_command, 0, 4); // filling 0 all elements of massive
 		}
 		
     /* USER CODE END WHILE */
@@ -192,7 +196,7 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL8;
+  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -397,7 +401,7 @@ static void MX_USART1_UART_Init(void)
 
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 3200000;
+  huart1.Init.BaudRate = 3000000;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;

@@ -36,4 +36,5 @@ fm24-np1002222\stm32f3xx_it.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal
 fm24-np1002222\stm32f3xx_it.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_uart.h
 fm24-np1002222\stm32f3xx_it.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_uart_ex.h
 fm24-np1002222\stm32f3xx_it.o: ../Drivers/CMSIS/Include/core_cm4.h
+fm24-np1002222\stm32f3xx_it.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 fm24-np1002222\stm32f3xx_it.o: ../Core/Inc/stm32f3xx_it.h

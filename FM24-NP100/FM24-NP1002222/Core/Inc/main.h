@@ -32,7 +32,7 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "core_cm4.h"
-
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -47,7 +47,12 @@ extern "C" {
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
-#define SIZE_BUFFER_ADC 10
+#define SIZE_BUFFER_ADC 500
+#define SIZE_UART_RX 4
+#define START_TX "START"
+#define STOP_TX "STOP"
+#define TEST_TX "TEST"
+#define RESET_TX "RESET"
 
 
 /* USER CODE END EM */

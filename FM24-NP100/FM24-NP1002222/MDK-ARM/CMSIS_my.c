@@ -65,11 +65,11 @@ void ADC1_2_Dual_Init(void)
 
 void TIM8_Init(void)
 {
-	SET_BIT(RCC->APB2ENR, RCC_APB2ENR_TIM8EN); //clock to TIM8 64MHz
+	SET_BIT(RCC->APB2ENR, RCC_APB2ENR_TIM8EN); //clock to TIM8 72MHz
 	TIM8->SMCR &= ~ TIM_SMCR_SMS; 
 	CLEAR_REG(TIM8->CR1);
 	TIM8->PSC = 1;
-	TIM8->ARR = 64; //1 MHz TIM8 then for ADC 0.5MHz
+	TIM8->ARR = 720; //1 MHz TIM8 then for ADC 0.5MHz // to do 100kHz
 	TIM8->DIER |= TIM_DIER_UIE; //interrupt on
 	TIM8->CR1 &= ~TIM_CR1_DIR_Msk; // straight count
 	
