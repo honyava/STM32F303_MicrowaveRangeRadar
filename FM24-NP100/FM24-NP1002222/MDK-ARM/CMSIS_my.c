@@ -69,15 +69,41 @@ void TIM8_Init(void)
 	TIM8->SMCR &= ~ TIM_SMCR_SMS; 
 	CLEAR_REG(TIM8->CR1);
 	TIM8->PSC = 1;
-	TIM8->ARR = 360; //200 kHz TIM8 then for ADC 100kHz
+	TIM8->ARR = 36000; //2 kHz TIM8 then for ADC 1kHz
 	TIM8->DIER |= TIM_DIER_UIE; //interrupt on
 	TIM8->CR1 &= ~TIM_CR1_DIR_Msk; // straight count
-	
-//	MODIFY_REG(TIM8->CR2, TIM_CR2_MMS2, 2 << TIM_CR2_MMS2_Pos);
 	MODIFY_REG(TIM8->CR2, TIM_CR2_MMS, 2 << TIM_CR2_MMS_Pos); // Update Event for ADC1
 //	SET_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 enable
-//	NVIC_SetPriority(1, TIM8_UP_IRQn);
 	NVIC_EnableIRQ(TIM8_UP_IRQn);
+}
+
+void DAC1_Init(void) // for T2 TSEL = 100     // DMA2 Channel 3
+{
+	SET_BIT(RCC->APB1ENR,RCC_APB1ENR_DAC1EN); // clock for DAC
+	RCC->AHBENR |= RCC_AHBENR_DMA2EN; // clock for DMA2
+	
+	SET_BIT(DAC->CR,DAC_CR_DMAEN1);
+	MODIFY_REG(DAC->CR, DAC_CR_MAMP1, 11 << DAC_CR_MAMP1_Pos); // Unmask bits[11:0] of LFSR/ triangle amplitude equal to 4095
+	MODIFY_REG(DAC->CR, DAC_CR_TSEL1, 4 << DAC_CR_TSEL1_Pos); // Timer 2 TRGO event
+	SET_BIT(DAC->CR,DAC_CR_TEN1); // DAC channel1 trigger enable
+	MODIFY_REG(DAC->CR, DAC_CR_WAVE1, 2 << DAC_CR_WAVE1_Pos); // Triangle wave generation enabled
+	CLEAR_BIT(DAC->SWTRIGR, DAC_SWTRIGR_SWTRIG1); //DAC channel1 software trigger disabled
+	
+	SET_BIT(DAC->CR, DAC_CR_EN1); // DAC channel1 enable
+}
+
+void TIM2_Init(void)
+{
+	SET_BIT(RCC->APB1ENR, RCC_APB1ENR_TIM2EN); //clock to TIM2 72MHz
+	TIM2->SMCR &= ~ TIM_SMCR_SMS; 
+	CLEAR_REG(TIM2->CR1);
+	TIM2->PSC = 1;
+	TIM2->ARR = 36000; //2 kHz TIM2 then for DAC 
+	TIM2->DIER |= TIM_DIER_UIE; //interrupt on
+	TIM2->CR1 &= ~TIM_CR1_DIR_Msk; // straight count
+	MODIFY_REG(TIM2->CR2, TIM_CR2_MMS, 2 << TIM_CR2_MMS_Pos); // Update Event for DAC1
+	SET_BIT(TIM2->CR1, TIM_CR1_CEN_Msk); // TIM2 enable
+	NVIC_EnableIRQ(TIM2_IRQn);	
 }
 
 

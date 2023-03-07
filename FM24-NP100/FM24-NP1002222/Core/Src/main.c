@@ -115,7 +115,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_OPAMP4_Init();
-  MX_DAC_Init();
+//  MX_DAC_Init();
   MX_OPAMP1_Init();
   MX_OPAMP2_Init();
   MX_OPAMP3_Init();
@@ -127,8 +127,11 @@ int main(void)
 	HAL_OPAMP_Start(&hopamp3);
 	HAL_OPAMP_Start(&hopamp4);
 	
-	ADC1_2_Dual_Init();	
+	ADC1_2_Dual_Init();
+	DAC1_Init();
+	TIM2_Init();
 	TIM8_Init();
+	
 	firstByteWait = 1;
 	HAL_UART_Receive_IT(&huart1, UART_command, 1);
   /* USER CODE END 2 */
@@ -167,10 +170,6 @@ int main(void)
 			UART_command[0] = 0; // make TEST 1 time
 			HAL_UART_Transmit_IT(&huart1, (uint8_t*)"TEST", 4);
 		}
-//		else
-//		{
-//			//memset(UART_command, 0, 4); // filling 0 all elements of massive
-//		}
 		
     /* USER CODE END WHILE */
 

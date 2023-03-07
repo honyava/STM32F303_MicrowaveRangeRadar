@@ -49,7 +49,7 @@ extern "C" {
 /* USER CODE BEGIN EM */
 #define SIZE_BUFFER_ADC 500
 #define SIZE_UART_RX 4
-#define START_TX "STAR\n"
+#define START_TX "STAR"
 #define STOP_TX "STOP"
 #define TEST_TX "TEST"
 #define RESET_TX "RESE"
@@ -63,9 +63,14 @@ void Error_Handler(void);
 /* USER CODE BEGIN EFP */
 void ADC1_2_Dual_Init(void);
 void DMA1_Channel1_IRQHandler(void);
+void DMA2_Channel3_IRQHandler(void);
 void TIM8_UP_IRQHandler(void);
 void TIM8_Init(void);
+void TIM2_IRQHandler(void);
+void TIM2_Init(void);
+void DAC1_Init(void);
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart);
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/

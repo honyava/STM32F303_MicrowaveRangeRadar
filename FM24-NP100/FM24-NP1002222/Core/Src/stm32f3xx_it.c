@@ -263,6 +263,12 @@ void DMA1_Channel1_IRQHandler(void) // for ADC1_2 (dual)
 	}
 }
 
+void DMA2_Channel3_IRQHandler(void) // for DAC1
+{
+	
+	;
+}
+
 void TIM8_UP_IRQHandler(void) // for ADC1_2 (dual)
 {
 	if(READ_BIT(TIM8->SR, TIM_SR_UIF)) // check the flag of interrupt
@@ -270,6 +276,15 @@ void TIM8_UP_IRQHandler(void) // for ADC1_2 (dual)
 		TIM8->SR &= ~ TIM_SR_UIF; // Resetting the flag of interrupt
 	}
 }
+
+void TIM2_IRQHandler(void) // for DAC1
+{
+	if(READ_BIT(TIM2->SR, TIM_SR_UIF)) // check the flag of interrupt
+	{
+		TIM2->SR &= ~ TIM_SR_UIF; // Resetting the flag of interrupt
+	}
+}
+
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
 	if(huart == &huart1)
