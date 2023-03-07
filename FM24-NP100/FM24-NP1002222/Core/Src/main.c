@@ -137,7 +137,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-		if (strcmp ((char*)UART_command, START_TX) == 0) //to do
+		if (strncmp ((char*)UART_command, START_TX, 4) == 0) //to do
 		{
 			SET_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 enable
 			if (flag_tx == 0)
@@ -154,15 +154,15 @@ int main(void)
 				}
 			}
 		}
-		else if(strcmp ((char*)UART_command, STOP_TX) == 0)
+		else if(strncmp ((char*)UART_command, STOP_TX, 4) == 0)
 		{
 			CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 disable
 		}
-		else if(strcmp ((char*)UART_command, RESET_TX) == 0)
+		else if(strncmp ((char*)UART_command, RESET_TX, 4) == 0)
 		{
 			HAL_NVIC_SystemReset();
 		}
-		else if(strcmp ((char*)UART_command, TEST_TX) == 0)
+		else if(strncmp ((char*)UART_command, TEST_TX, 4) == 0)
 		{
 			UART_command[0] = 0; // make TEST 1 time
 			HAL_UART_Transmit_IT(&huart1, (uint8_t*)"TEST", 4);

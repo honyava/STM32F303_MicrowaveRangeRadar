@@ -49,10 +49,10 @@ extern "C" {
 /* USER CODE BEGIN EM */
 #define SIZE_BUFFER_ADC 500
 #define SIZE_UART_RX 4
-#define START_TX "START"
+#define START_TX "STAR\n"
 #define STOP_TX "STOP"
 #define TEST_TX "TEST"
-#define RESET_TX "RESET"
+#define RESET_TX "RESE"
 
 
 /* USER CODE END EM */
