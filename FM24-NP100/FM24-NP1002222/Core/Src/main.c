@@ -51,9 +51,11 @@ UART_HandleTypeDef huart1;
 /* USER CODE BEGIN PV */
 uint32_t volatile BUFF_ADC1_2[SIZE_BUFFER_ADC];
 uint32_t volatile BUFF_ADC1_2_half[SIZE_BUFFER_ADC/2];
-uint8_t flag_dma = 0;
+uint8_t flag_dma_half = 0;
+uint8_t flag_dma_complete = 0;
 uint8_t flag_tx = 0;
 uint8_t flag_rx = 0;
+uint8_t flag_test = 0;
 int test_vec = 0;
 uint8_t UART_command[SIZE_UART_RX] = {0,};
 uint8_t firstByteWait = 0;
@@ -129,46 +131,46 @@ int main(void)
 	TIM8_Init();
 	firstByteWait = 1;
 	HAL_UART_Receive_IT(&huart1, UART_command, 1);
-	//HAL_UART_Transmit_IT(&huart1, (uint8_t*)"STOP", 5);
-//	HAL_UART_Transmit_IT(&huart1, (uint8_t*)"STOP", 4);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	
-		//test_vec++;
-		//HAL_UART_Transmit_IT(&huart1, (uint8_t*)"HELLO", 5);
-//		HAL_UART_Receive_IT(&huart1, (uint8_t*)UART_command, SIZE_UART_RX);	
-		if (strncmp ((char*)UART_command, START_TX, 4) == 0) //to do
+		if (strcmp ((char*)UART_command, START_TX) == 0) //to do
 		{
 			SET_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 enable
-			if (flag_dma == 1)
+			if (flag_tx == 0)
 			{
-				if (flag_tx == 0)
+				if (flag_dma_half == 1)
 				{
 					HAL_UART_Transmit_IT(&huart1, (uint8_t*)BUFF_ADC1_2_half, SIZE_BUFFER_ADC*2);
+					flag_dma_half = 0;
 				}
-				flag_dma = 0;
+				else if (flag_dma_complete == 1)
+				{
+					HAL_UART_Transmit_IT(&huart1, (uint8_t*)BUFF_ADC1_2_half, SIZE_BUFFER_ADC*2);
+					flag_dma_complete = 0;
+				}
 			}
 		}
-		else if(strncmp ((char*)UART_command, STOP_TX, 4) == 0)
+		else if(strcmp ((char*)UART_command, STOP_TX) == 0)
 		{
 			CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 disable
 		}
-		else if(strncmp ((char*)UART_command, RESET_TX, 4) == 0)
+		else if(strcmp ((char*)UART_command, RESET_TX) == 0)
 		{
 			HAL_NVIC_SystemReset();
 		}
-		else if(strncmp ((char*)UART_command, TEST_TX, 4) == 0)
+		else if(strcmp ((char*)UART_command, TEST_TX) == 0)
 		{
+			UART_command[0] = 0; // make TEST 1 time
 			HAL_UART_Transmit_IT(&huart1, (uint8_t*)"TEST", 4);
 		}
-		else
-		{
-			//memset(UART_command, 0, 4); // filling 0 all elements of massive
-		}
+//		else
+//		{
+//			//memset(UART_command, 0, 4); // filling 0 all elements of massive
+//		}
 		
     /* USER CODE END WHILE */
 

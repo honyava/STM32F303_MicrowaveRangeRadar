@@ -57,7 +57,8 @@
 /* External variables --------------------------------------------------------*/
 extern UART_HandleTypeDef huart1;
 /* USER CODE BEGIN EV */
-extern uint8_t flag_dma;
+extern uint8_t flag_dma_half;
+extern uint8_t flag_dma_complete;
 extern uint8_t flag_tx;
 extern uint8_t flag_rx;
 extern uint32_t volatile BUFF_ADC1_2[SIZE_BUFFER_ADC];
@@ -244,9 +245,10 @@ void DMA1_Channel1_IRQHandler(void) // for ADC1_2 (dual)
 		{
 			BUFF_ADC1_2_half[i - SIZE_BUFFER_ADC/2] = BUFF_ADC1_2[i];
 		}
-		flag_dma = 1;
+		flag_dma_half = 0;
+		flag_dma_complete = 1;
 		flag_tx = 0;
-		HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+//		HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
 	}
 	if(READ_BIT(DMA1->ISR, DMA_ISR_HTIF1)) // half transfer complete
 	{
@@ -255,7 +257,8 @@ void DMA1_Channel1_IRQHandler(void) // for ADC1_2 (dual)
 		{
 			BUFF_ADC1_2_half[i] = BUFF_ADC1_2[i];
 		}
-		flag_dma = 1;
+		flag_dma_complete = 0;
+		flag_dma_half = 1;
 		flag_tx = 0;
 	}
 }
@@ -282,7 +285,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		if (firstByteWait != 0)
 		{	
 			flag_rx = 1;
-			firstByteWait=0;
+			firstByteWait = 0;
 			HAL_UART_Receive_IT(&huart1, UART_command + 1, SIZE_UART_RX - 1);
 		}
 	}

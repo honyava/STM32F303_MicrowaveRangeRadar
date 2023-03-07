@@ -69,7 +69,7 @@ void TIM8_Init(void)
 	TIM8->SMCR &= ~ TIM_SMCR_SMS; 
 	CLEAR_REG(TIM8->CR1);
 	TIM8->PSC = 1;
-	TIM8->ARR = 720; //1 MHz TIM8 then for ADC 0.5MHz // to do 100kHz
+	TIM8->ARR = 360; //200 kHz TIM8 then for ADC 100kHz
 	TIM8->DIER |= TIM_DIER_UIE; //interrupt on
 	TIM8->CR1 &= ~TIM_CR1_DIR_Msk; // straight count
 	
