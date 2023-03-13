@@ -265,8 +265,11 @@ void DMA1_Channel1_IRQHandler(void) // for ADC1_2 (dual)
 
 void DMA2_Channel3_IRQHandler(void) // for DAC1
 {
+	if(READ_BIT(DMA2->ISR, DMA_ISR_TCIF3)) // transfer complete
+	{
+		DMA2->IFCR = DMA_IFCR_CTCIF3; // Resetting the flag of interrupt
+	}
 	
-	;
 }
 
 void TIM8_UP_IRQHandler(void) // for ADC1_2 (dual)
