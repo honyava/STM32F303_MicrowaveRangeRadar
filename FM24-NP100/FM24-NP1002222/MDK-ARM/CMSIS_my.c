@@ -59,7 +59,7 @@ void ADC1_2_Dual_Init(void)
 	DMA1_Channel1->CNDTR |= (SIZE_BUFFER_ADC << DMA_CNDTR_NDT_Pos);
 	SET_BIT(DMA1_Channel1->CCR, DMA_CCR_EN); // Enable DMA
 	NVIC_EnableIRQ(DMA1_Channel1_IRQn);
-	NVIC_SetPriority(DMA1_Channel1_IRQn,1);
+	NVIC_SetPriority(DMA1_Channel1_IRQn,2);
 	/////
 }
 
@@ -68,8 +68,8 @@ void TIM8_Init(void)
 	SET_BIT(RCC->APB2ENR, RCC_APB2ENR_TIM8EN); //clock to TIM8 72MHz
 	TIM8->SMCR &= ~ TIM_SMCR_SMS; 
 	CLEAR_REG(TIM8->CR1);
-	TIM8->PSC = 1;
-	TIM8->ARR = 36000-1; //1 kHz TIM8 then for ADC 1kHz
+	TIM8->PSC = 0;
+	TIM8->ARR = 250-1; //720 kHz TIM8 then for ADC 720kHz
 	TIM8->DIER |= TIM_DIER_UIE; //interrupt on
 	TIM8->CR1 &= ~TIM_CR1_DIR_Msk; // straight count
 	MODIFY_REG(TIM8->CR2, TIM_CR2_MMS, 2 << TIM_CR2_MMS_Pos); // Update Event for ADC1
@@ -104,7 +104,7 @@ void DAC1_Init(void) // for T2 TSEL = 100     // DMA2 Channel 3
 	DMA2_Channel3->CNDTR |= (128 << DMA_CNDTR_NDT_Pos);
 	SET_BIT(DMA2_Channel3->CCR, DMA_CCR_EN); // Enable DMA
 	NVIC_EnableIRQ(DMA2_Channel3_IRQn);
-	NVIC_SetPriority(DMA2_Channel3_IRQn,1);
+	NVIC_SetPriority(DMA2_Channel3_IRQn,2);
 	
 }
 
@@ -114,11 +114,11 @@ void TIM2_Init(void)
 	TIM2->SMCR &= ~ TIM_SMCR_SMS; 
 	CLEAR_REG(TIM2->CR1);
 	TIM2->PSC = 0;
-	TIM2->ARR = 120-1; //600 kHz TIM2 then for DAC 600 kHz
+	TIM2->ARR = 500-1; //144 kHz TIM2 then for DAC 144 kHz  144/128 = 1.125kHz
 	TIM2->DIER |= TIM_DIER_UIE; //interrupt on
 	TIM2->CR1 &= ~TIM_CR1_DIR_Msk; // straight count
 	MODIFY_REG(TIM2->CR2, TIM_CR2_MMS, 2 << TIM_CR2_MMS_Pos); // Update Event for DAC1
-	SET_BIT(TIM2->CR1, TIM_CR1_CEN_Msk); // TIM2 enable
+	//SET_BIT(TIM2->CR1, TIM_CR1_CEN_Msk); // TIM2 enable
 	NVIC_EnableIRQ(TIM2_IRQn);	
 }
 

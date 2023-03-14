@@ -47,7 +47,7 @@ extern "C" {
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
-#define SIZE_BUFFER_ADC 500
+#define SIZE_BUFFER_ADC 128
 #define SIZE_UART_RX 4
 #define START_TX "STAR"
 #define STOP_TX "STOP"

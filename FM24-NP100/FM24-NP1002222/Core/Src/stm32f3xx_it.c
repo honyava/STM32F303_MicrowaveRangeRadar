@@ -58,11 +58,13 @@
 extern UART_HandleTypeDef huart1;
 /* USER CODE BEGIN EV */
 extern uint8_t flag_dma_half;
-extern uint8_t flag_dma_complete;
-extern uint8_t flag_tx;
-extern uint8_t flag_rx;
-extern uint32_t volatile BUFF_ADC1_2[SIZE_BUFFER_ADC];
-extern uint32_t volatile BUFF_ADC1_2_half[SIZE_BUFFER_ADC/2];
+extern volatile uint32_t flag_dma_complete;
+extern volatile uint8_t flag_tx;
+extern volatile uint8_t flag_rx;
+extern volatile uint32_t flag_dac;
+extern volatile uint32_t BUFF_ADC1_2[SIZE_BUFFER_ADC];
+extern volatile uint32_t BUFF_ADC1_2_all[SIZE_BUFFER_ADC*3*10];
+//extern uint32_t volatile BUFF_ADC1_2_half[SIZE_BUFFER_ADC/2];
 extern uint8_t UART_command[SIZE_UART_RX];
 extern uint8_t firstByteWait;
 
@@ -238,28 +240,44 @@ void USART1_IRQHandler(void)
 /* USER CODE BEGIN 1 */
 void DMA1_Channel1_IRQHandler(void) // for ADC1_2 (dual)
 {
-	if(READ_BIT(DMA1->ISR, DMA_ISR_TCIF1)) // transfer complete
-	{
-		DMA1->IFCR = DMA_IFCR_CTCIF1; // Resetting the flag of interrupt
-		for(uint16_t i = SIZE_BUFFER_ADC/2; i < SIZE_BUFFER_ADC; i++)
-		{
-			BUFF_ADC1_2_half[i - SIZE_BUFFER_ADC/2] = BUFF_ADC1_2[i];
-		}
-		flag_dma_half = 0;
-		flag_dma_complete = 1;
-		flag_tx = 0;
-//		HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-	}
+	
+//	if(READ_BIT(DMA1->ISR, DMA_ISR_TCIF1)) // transfer complete
+//	{
+//		DMA1->IFCR |= DMA_IFCR_CGIF1; // Resetting the flag of interrupt
+//		
+//		for(uint16_t i = 0; i < SIZE_BUFFER_ADC; i++)
+//		{
+//			BUFF_ADC1_2_all[i + SIZE_BUFFER_ADC*flag_dma_complete] = BUFF_ADC1_2[i];
+//		}
+//		flag_dma_complete++;
+//		flag_tx = 0;
+//	}
+	
+/////////////////////////////////////////////	for continuous sending
 	if(READ_BIT(DMA1->ISR, DMA_ISR_HTIF1)) // half transfer complete
 	{
-		DMA1->IFCR = DMA_IFCR_CHTIF1; // Resetting the flag of interrupt
+		//DMA1->IFCR |= DMA_IFCR_CGIF1;
+		SET_BIT(DMA1->IFCR, DMA_IFCR_CHTIF1_Msk);
+		//DMA1->IFCR |= DMA_IFCR_CHTIF1; // Resetting the flag of interrupt
 		for(uint16_t i = 0; i < SIZE_BUFFER_ADC/2; i++)
 		{
-			BUFF_ADC1_2_half[i] = BUFF_ADC1_2[i];
+			BUFF_ADC1_2_all[i + (SIZE_BUFFER_ADC*flag_dma_complete)] = BUFF_ADC1_2[i];
 		}
-		flag_dma_complete = 0;
-		flag_dma_half = 1;
 		flag_tx = 0;
+	}	
+	if(READ_BIT(DMA1->ISR, DMA_ISR_TCIF1)) // transfer complete
+	{
+	//	DMA1->IFCR |= DMA_IFCR_CGIF1;
+	//	DMA1->IFCR |= DMA_IFCR_CTCIF1; // Resetting the flag of interrupt
+		SET_BIT(DMA1->IFCR, DMA_IFCR_CTCIF1_Msk);
+		for(uint16_t i = SIZE_BUFFER_ADC/2; i < SIZE_BUFFER_ADC; i++)
+		{
+			BUFF_ADC1_2_all[i + (SIZE_BUFFER_ADC*flag_dma_complete)] = BUFF_ADC1_2[i];
+		}
+		//flag_dma_half = 0;
+		flag_dma_complete++;
+		flag_tx = 0;
+//		HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
 	}
 }
 
@@ -267,16 +285,16 @@ void DMA2_Channel3_IRQHandler(void) // for DAC1
 {
 	if(READ_BIT(DMA2->ISR, DMA_ISR_TCIF3)) // transfer complete
 	{
-		DMA2->IFCR = DMA_IFCR_CTCIF3; // Resetting the flag of interrupt
+		SET_BIT(DMA2->IFCR, DMA_IFCR_CTCIF3_Msk); // Resetting the flag of interrupt
+		flag_dac++;
 	}
-	
 }
 
 void TIM8_UP_IRQHandler(void) // for ADC1_2 (dual)
 {
 	if(READ_BIT(TIM8->SR, TIM_SR_UIF)) // check the flag of interrupt
 	{
-		TIM8->SR &= ~ TIM_SR_UIF; // Resetting the flag of interrupt
+		TIM8->SR &= ~TIM_SR_UIF; // Resetting the flag of interrupt
 	}
 }
 
@@ -284,7 +302,7 @@ void TIM2_IRQHandler(void) // for DAC1
 {
 	if(READ_BIT(TIM2->SR, TIM_SR_UIF)) // check the flag of interrupt
 	{
-		TIM2->SR &= ~ TIM_SR_UIF; // Resetting the flag of interrupt
+		TIM2->SR &= ~TIM_SR_UIF; // Resetting the flag of interrupt
 	}
 }
 

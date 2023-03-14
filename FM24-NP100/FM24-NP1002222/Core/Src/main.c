@@ -39,8 +39,6 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-DAC_HandleTypeDef hdac;
-
 OPAMP_HandleTypeDef hopamp1;
 OPAMP_HandleTypeDef hopamp2;
 OPAMP_HandleTypeDef hopamp3;
@@ -49,7 +47,7 @@ OPAMP_HandleTypeDef hopamp4;
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
-const uint16_t Triangle_DAC[128] = { 0,	64,	128,	192,	256,	320,	384,	448,	512,	576,	640,	704,	768,
+const uint16_t Triangle_DAC[128] = {0,	64,	128,	192,	256,	320,	384,	448,	512,	576,	640,	704,	768,
 	832,	896,	960,	1024,	1088,	1152,	1216,	1280,	1344,	1408,	1472,	1536,	1600,	1664,	1728,	1792,	1856,
 	1920,	1984,	2048,	2111,	2175,	2239,	2303,	2367,	2431,	2495,	2559,	2623,	2687,	2751,	2815,	2879,	2943,
 	3007,	3071,	3135,	3199,	3263,	3327,	3391,	3455,	3519,	3583,	3647,	3711,	3775,	3839,	3903,	3967,	4031,
@@ -60,23 +58,32 @@ const uint16_t Triangle_DAC[128] = { 0,	64,	128,	192,	256,	320,	384,	448,	512,	5
 	};
 
 
-uint32_t volatile BUFF_ADC1_2[SIZE_BUFFER_ADC];
-uint32_t volatile BUFF_ADC1_2_half[SIZE_BUFFER_ADC/2];
+volatile uint32_t BUFF_ADC1_2[SIZE_BUFFER_ADC] = {0,};
+//uint32_t volatile BUFF_ADC1_2_half[SIZE_BUFFER_ADC/2];
+volatile uint32_t BUFF_ADC1_2_all[SIZE_BUFFER_ADC*3*10] = {0,};
 uint8_t flag_dma_half = 0;
-uint8_t flag_dma_complete = 0;
-uint8_t flag_tx = 0;
-uint8_t flag_rx = 0;
+volatile uint32_t flag_dma_complete = 0;
+volatile uint32_t flag_dac = 0;	
+volatile uint32_t flag_tx = 0;
+volatile uint32_t flag_rx = 0;
 uint8_t flag_test = 0;
 int test_vec = 0;
+	
+uint8_t start_byte = 0x01;	
+uint8_t period_number = 0;
+uint16_t message_size = 0;
+uint32_t preamble = 0;	
+volatile uint32_t* address = 0;
+	
 uint8_t UART_command[SIZE_UART_RX] = {0,};
 uint8_t firstByteWait = 0;
+//uint8_t k = 1;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_OPAMP4_Init(void);
-static void MX_DAC_Init(void);
 static void MX_OPAMP1_Init(void);
 static void MX_OPAMP2_Init(void);
 static void MX_OPAMP3_Init(void);
@@ -109,7 +116,6 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-
   HAL_Init();
 
   /* USER CODE BEGIN Init */
@@ -126,7 +132,6 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_OPAMP4_Init();
-//  MX_DAC_Init();
   MX_OPAMP1_Init();
   MX_OPAMP2_Init();
   MX_OPAMP3_Init();
@@ -154,23 +159,38 @@ int main(void)
 		if (strncmp ((char*)UART_command, START_TX, 4) == 0) //to do
 		{
 			SET_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 enable
+			SET_BIT(TIM2->CR1, TIM_CR1_CEN_Msk); // TIM2 enable
 			if (flag_tx == 0)
 			{
-				if (flag_dma_half == 1)
+				
+				if (flag_dac != 0) // to do
 				{
-					HAL_UART_Transmit_IT(&huart1, (uint8_t*)BUFF_ADC1_2_half, SIZE_BUFFER_ADC*2);
-					flag_dma_half = 0;
-				}
-				else if (flag_dma_complete == 1)
-				{
-					HAL_UART_Transmit_IT(&huart1, (uint8_t*)BUFF_ADC1_2_half, SIZE_BUFFER_ADC*2);
+					period_number = flag_dac;
+					message_size = SIZE_BUFFER_ADC*4*flag_dma_complete;
+					preamble = (start_byte) | (period_number << 8) | (message_size << 16);
+//					address = BUFF_ADC1_2_all - 1;
+//					*address = preamble;
+					HAL_UART_Transmit_IT(&huart1, (uint8_t*)address, SIZE_BUFFER_ADC*4*flag_dma_complete);
+					flag_dac = 0;
 					flag_dma_complete = 0;
 				}
+///////////////////////////////////////////////	for continuous sending				
+//				if (flag_dma_half == 1)
+//				{
+//					HAL_UART_Transmit_IT(&huart1, (uint8_t*)BUFF_ADC1_2_half, SIZE_BUFFER_ADC*2);
+//					flag_dma_half = 0;
+//				}
+//				else if (flag_dma_complete == 1)
+//				{
+//					HAL_UART_Transmit_IT(&huart1, (uint8_t*)BUFF_ADC1_2_half, SIZE_BUFFER_ADC*2);
+//					flag_dma_complete = 0;
+//				}
 			}
 		}
 		else if(strncmp ((char*)UART_command, STOP_TX, 4) == 0)
 		{
 			CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 disable
+			CLEAR_BIT(TIM2->CR1, TIM_CR1_CEN_Msk); // TIM2 disable
 		}
 		else if(strncmp ((char*)UART_command, RESET_TX, 4) == 0)
 		{
@@ -233,46 +253,6 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-}
-
-/**
-  * @brief DAC Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_DAC_Init(void)
-{
-
-  /* USER CODE BEGIN DAC_Init 0 */
-
-  /* USER CODE END DAC_Init 0 */
-
-  DAC_ChannelConfTypeDef sConfig = {0};
-
-  /* USER CODE BEGIN DAC_Init 1 */
-
-  /* USER CODE END DAC_Init 1 */
-
-  /** DAC Initialization
-  */
-  hdac.Instance = DAC;
-  if (HAL_DAC_Init(&hdac) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** DAC channel OUT1 config
-  */
-  sConfig.DAC_Trigger = DAC_TRIGGER_NONE;
-  sConfig.DAC_OutputBuffer = DAC_OUTPUTBUFFER_ENABLE;
-  if (HAL_DAC_ConfigChannel(&hdac, &sConfig, DAC_CHANNEL_1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN DAC_Init 2 */
-
-  /* USER CODE END DAC_Init 2 */
-
 }
 
 /**
@@ -456,6 +436,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PA4 */
+  GPIO_InitStruct.Pin = GPIO_PIN_4;
+  GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PA15 */
   GPIO_InitStruct.Pin = GPIO_PIN_15;
