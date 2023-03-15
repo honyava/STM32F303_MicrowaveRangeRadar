@@ -57,9 +57,9 @@ const uint16_t Triangle_DAC[128] = {0,	64,	128,	192,	256,	320,	384,	448,	512,	57
 	832,	768,	704,	640,	576,	512,	448,	384,	320,	256,	192,	128,	64
 	};
 
-
+	
 volatile uint32_t BUFF_ADC1_2[SIZE_BUFFER_ADC] = {0,};
-//uint32_t volatile BUFF_ADC1_2_half[SIZE_BUFFER_ADC/2];
+//uint32_t volatile BUFF_ADC1_2_half[SIZE_BUFFER_ADC/2] = {0,};
 volatile uint32_t BUFF_ADC1_2_all[SIZE_BUFFER_ADC*3*10] = {0,};
 uint8_t flag_dma_half = 0;
 volatile uint32_t flag_dma_complete = 0;
@@ -67,7 +67,7 @@ volatile uint32_t flag_dac = 0;
 volatile uint32_t flag_tx = 0;
 volatile uint32_t flag_rx = 0;
 uint8_t flag_test = 0;
-int test_vec = 0;
+//int test_vec = 0;
 	
 uint8_t start_byte = 0x01;	
 uint8_t period_number = 0;
@@ -78,6 +78,9 @@ volatile uint32_t* address = 0;
 uint8_t UART_command[SIZE_UART_RX] = {0,};
 uint8_t firstByteWait = 0;
 //uint8_t k = 1;
+
+struct message_ADC message_ADC12 = {0};
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -110,7 +113,8 @@ static void MX_USART1_UART_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+	
+	
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -143,6 +147,7 @@ int main(void)
 	HAL_OPAMP_Start(&hopamp3);
 	HAL_OPAMP_Start(&hopamp4);
 	
+	
 	ADC1_2_Dual_Init();
 	DAC1_Init();
 	TIM2_Init();
@@ -168,11 +173,16 @@ int main(void)
 					period_number = flag_dac;
 					message_size = SIZE_BUFFER_ADC*4*flag_dma_complete;
 					preamble = (start_byte) | (period_number << 8) | (message_size << 16);
-//					address = BUFF_ADC1_2_all - 1;
-//					*address = preamble;
-					HAL_UART_Transmit_IT(&huart1, (uint8_t*)address, SIZE_BUFFER_ADC*4*flag_dma_complete);
+					
+					//message_ADC12.BUFF = &BUFF_ADC1_2_all[0];
+					message_ADC12.preamble = preamble;
+					
+					HAL_UART_Transmit_IT(&huart1, (uint8_t*)&message_ADC12, SIZE_BUFFER_ADC*4*flag_dma_complete + 4);
 					flag_dac = 0;
 					flag_dma_complete = 0;
+					UART_command[0] = 0; 
+					CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 disable
+					CLEAR_BIT(TIM2->CR1, TIM_CR1_CEN_Msk); // TIM2 disable
 				}
 ///////////////////////////////////////////////	for continuous sending				
 //				if (flag_dma_half == 1)

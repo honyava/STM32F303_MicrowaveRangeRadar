@@ -76,7 +76,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
 /* Private defines -----------------------------------------------------------*/
 
 /* USER CODE BEGIN Private defines */
-
+struct message_ADC
+{
+	volatile uint32_t preamble;
+	volatile uint32_t BUFF[SIZE_BUFFER_ADC*3*10];	
+};
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

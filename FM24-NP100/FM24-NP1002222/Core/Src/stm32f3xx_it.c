@@ -68,6 +68,8 @@ extern volatile uint32_t BUFF_ADC1_2_all[SIZE_BUFFER_ADC*3*10];
 extern uint8_t UART_command[SIZE_UART_RX];
 extern uint8_t firstByteWait;
 
+extern struct message_ADC message_ADC12;
+
 uint16_t timeOut = 0;
 /* USER CODE END EV */
 
@@ -261,7 +263,7 @@ void DMA1_Channel1_IRQHandler(void) // for ADC1_2 (dual)
 		//DMA1->IFCR |= DMA_IFCR_CHTIF1; // Resetting the flag of interrupt
 		for(uint16_t i = 0; i < SIZE_BUFFER_ADC/2; i++)
 		{
-			BUFF_ADC1_2_all[i + (SIZE_BUFFER_ADC*flag_dma_complete)] = BUFF_ADC1_2[i];
+			message_ADC12.BUFF[i + (SIZE_BUFFER_ADC*flag_dma_complete)] = BUFF_ADC1_2[i];
 		}
 		flag_tx = 0;
 	}	
@@ -272,7 +274,7 @@ void DMA1_Channel1_IRQHandler(void) // for ADC1_2 (dual)
 		SET_BIT(DMA1->IFCR, DMA_IFCR_CTCIF1_Msk);
 		for(uint16_t i = SIZE_BUFFER_ADC/2; i < SIZE_BUFFER_ADC; i++)
 		{
-			BUFF_ADC1_2_all[i + (SIZE_BUFFER_ADC*flag_dma_complete)] = BUFF_ADC1_2[i];
+			message_ADC12.BUFF[i + (SIZE_BUFFER_ADC*flag_dma_complete)] = BUFF_ADC1_2[i];
 		}
 		//flag_dma_half = 0;
 		flag_dma_complete++;

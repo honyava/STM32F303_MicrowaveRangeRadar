@@ -1,10 +1,12 @@
 #include "main.h"
 
-extern uint32_t volatile BUFF_ADC1_2[SIZE_BUFFER_ADC];
+extern volatile uint32_t BUFF_ADC1_2[SIZE_BUFFER_ADC];
 extern const uint16_t Triangle_DAC[128];
+
 	
 void ADC1_2_Dual_Init(void)
 {
+	
 	SET_BIT(RCC->AHBENR,RCC_AHBENR_ADC12EN);
 	RCC->AHBENR |= RCC_AHBENR_DMA1EN;
 	/////////Multi-mode
