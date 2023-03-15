@@ -173,7 +173,7 @@
         <Ww>
           <count>4</count>
           <WinNumber>1</WinNumber>
-          <ItemText>BUFF_ADC1_2_all,0x10</ItemText>
+          <ItemText>BUFF_ADC1_2_all,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>5</count>
@@ -189,6 +189,16 @@
           <count>7</count>
           <WinNumber>1</WinNumber>
           <ItemText>preamble</ItemText>
+        </Ww>
+        <Ww>
+          <count>8</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>flag_dac_count</ItemText>
+        </Ww>
+        <Ww>
+          <count>9</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>flag_trans</ItemText>
         </Ww>
       </WatchWindow1>
       <MemoryWindow1>

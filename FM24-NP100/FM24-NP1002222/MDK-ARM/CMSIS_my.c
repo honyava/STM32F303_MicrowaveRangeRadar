@@ -71,7 +71,7 @@ void TIM8_Init(void)
 	TIM8->SMCR &= ~ TIM_SMCR_SMS; 
 	CLEAR_REG(TIM8->CR1);
 	TIM8->PSC = 0;
-	TIM8->ARR = 250-1; //720 kHz TIM8 then for ADC 720kHz
+	TIM8->ARR = 125-1; //576 kHz TIM8 then for ADC 576kHz  
 	TIM8->DIER |= TIM_DIER_UIE; //interrupt on
 	TIM8->CR1 &= ~TIM_CR1_DIR_Msk; // straight count
 	MODIFY_REG(TIM8->CR2, TIM_CR2_MMS, 2 << TIM_CR2_MMS_Pos); // Update Event for ADC1
@@ -120,7 +120,7 @@ void TIM2_Init(void)
 	TIM2->DIER |= TIM_DIER_UIE; //interrupt on
 	TIM2->CR1 &= ~TIM_CR1_DIR_Msk; // straight count
 	MODIFY_REG(TIM2->CR2, TIM_CR2_MMS, 2 << TIM_CR2_MMS_Pos); // Update Event for DAC1
-	//SET_BIT(TIM2->CR1, TIM_CR1_CEN_Msk); // TIM2 enable
+	SET_BIT(TIM2->CR1, TIM_CR1_CEN_Msk); // TIM2 enable
 	NVIC_EnableIRQ(TIM2_IRQn);	
 }
 

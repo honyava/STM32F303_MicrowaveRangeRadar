@@ -18,7 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-
+#include <math.h>
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -57,15 +57,29 @@ const uint16_t Triangle_DAC[128] = {0,	64,	128,	192,	256,	320,	384,	448,	512,	57
 	832,	768,	704,	640,	576,	512,	448,	384,	320,	256,	192,	128,	64
 	};
 
+//const uint16_t Triangle_DAC[128] = {0,	32,	64,	96,	128,	160,	192,	224,	256,	288,	320,	352,	384,
+//	416,	448,	480,	512,	544,	576,	608,	640,	672,	704,	736,	768,	800,	832,	864,	896,	928,	
+//	960,	992,	1024,	1056,	1088,	1120,	1152,	1184,	1216,	1248,	1280,	1312,	1344,	1376,	1408,	1440,	1472,	
+//	1504,	1536,	1568,	1600,	1632,	1664,	1696,	1728,	1760,	1792,	1824,	1856,	1888,	1920,	1952,	1984,	2016,
+//	2048,	2079,	2111,	2143,	2175,	2207,	2239,	2271,	2303,	2335,	2367,	2399,	2431,	2463,	2495,	2527,	2559,
+//	2591,	2623,	2655,	2687,	2719,	2751,	2783,	2815,	2847,	2879,	2911,	2943,	2975,	3007,	3039,	3071,	3103,	
+//	3135,	3167,	3199,	3231,	3263,	3295,	3327,	3359,	3391,	3423,	3455,	3487,	3519,	3551,	3583,	3615,	3647,
+//	3679,	3711,	3743,	3775,	3807,	3839,	3871,	3903,	3935,	3967,	3999,	4031,	4063
+//	};
+uint16_t Triangle_DAC3[128] = {0,};
 	
 volatile uint32_t BUFF_ADC1_2[SIZE_BUFFER_ADC] = {0,};
 //uint32_t volatile BUFF_ADC1_2_half[SIZE_BUFFER_ADC/2] = {0,};
-volatile uint32_t BUFF_ADC1_2_all[SIZE_BUFFER_ADC*3*10] = {0,};
+//volatile uint32_t BUFF_ADC1_2_all[SIZE_BUFFER_ADC*3*10] = {0,};
 uint8_t flag_dma_half = 0;
 volatile uint32_t flag_dma_complete = 0;
 volatile uint32_t flag_dac = 0;	
+volatile uint32_t flag_dac_count = 0;	
 volatile uint32_t flag_tx = 0;
 volatile uint32_t flag_rx = 0;
+volatile uint32_t flag_trans = 0;
+
+volatile uint32_t k1 = 5;
 uint8_t flag_test = 0;
 //int test_vec = 0;
 	
@@ -75,9 +89,9 @@ uint16_t message_size = 0;
 uint32_t preamble = 0;	
 volatile uint32_t* address = 0;
 	
-uint8_t UART_command[SIZE_UART_RX] = {0,};
+uint8_t UART_command[SIZE_UART_RX];
 uint8_t firstByteWait = 0;
-//uint8_t k = 1;
+uint32_t k = 0;
 
 struct message_ADC message_ADC12 = {0};
 
@@ -161,28 +175,35 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+//		switch (UART_command[0])
+//		{
+//			case 1:
+//				k = 36;
+//			case 2:
+//				k = 50;
+//			case 3:
+//				k = 100;			
+//		}
 		if (strncmp ((char*)UART_command, START_TX, 4) == 0) //to do
 		{
 			SET_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 enable
-			SET_BIT(TIM2->CR1, TIM_CR1_CEN_Msk); // TIM2 enable
 			if (flag_tx == 0)
 			{
-				
-				if (flag_dac != 0) // to do
+				if (flag_trans == 1) // to do k/36
 				{
-					period_number = flag_dac;
-					message_size = SIZE_BUFFER_ADC*4*flag_dma_complete;
+					UART_command[0] = 0;
+					period_number = flag_dac_count;
+					message_size = SIZE_BUFFER_ADC*flag_dma_complete*4; //bytes
 					preamble = (start_byte) | (period_number << 8) | (message_size << 16);
-					
-					//message_ADC12.BUFF = &BUFF_ADC1_2_all[0];
+	
 					message_ADC12.preamble = preamble;
 					
-					HAL_UART_Transmit_IT(&huart1, (uint8_t*)&message_ADC12, SIZE_BUFFER_ADC*4*flag_dma_complete + 4);
-					flag_dac = 0;
+					HAL_UART_Transmit_IT(&huart1, (uint8_t*)&message_ADC12,  message_size + 4);
+					flag_trans = 0;
 					flag_dma_complete = 0;
-					UART_command[0] = 0; 
-					CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 disable
-					CLEAR_BIT(TIM2->CR1, TIM_CR1_CEN_Msk); // TIM2 disable
+					flag_dac_count = 0;
+					//UART_command[0] = 0;
+//					CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 disable
 				}
 ///////////////////////////////////////////////	for continuous sending				
 //				if (flag_dma_half == 1)
@@ -200,7 +221,7 @@ int main(void)
 		else if(strncmp ((char*)UART_command, STOP_TX, 4) == 0)
 		{
 			CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 disable
-			CLEAR_BIT(TIM2->CR1, TIM_CR1_CEN_Msk); // TIM2 disable
+			//CLEAR_BIT(TIM2->CR1, TIM_CR1_CEN_Msk); // TIM2 disable
 		}
 		else if(strncmp ((char*)UART_command, RESET_TX, 4) == 0)
 		{
@@ -212,6 +233,17 @@ int main(void)
 			HAL_UART_Transmit_IT(&huart1, (uint8_t*)"TEST", 4);
 		}
 		
+//		for(uint16_t i = 0; i < SIZE_BUFFER_ADC; i++)
+//		{
+//			if(i < 64)
+//				Triangle_DAC2[i] = (1 + i*tan((2*Ampl)/SIZE_BUFFER_ADC));
+//			else Triangle_DAC2[i] = (1 - i*tan((2*Ampl)/SIZE_BUFFER_ADC));
+//		}
+//		
+//		for(uint16_t i = 0; i < SIZE_BUFFER_ADC; i++)
+//		{
+//			Triangle_DAC2[i] = (i*tan((1*Ampl)/SIZE_BUFFER_ADC));	
+//		}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
