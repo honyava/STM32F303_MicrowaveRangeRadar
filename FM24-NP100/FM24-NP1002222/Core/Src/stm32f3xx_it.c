@@ -305,7 +305,7 @@ void DMA2_Channel3_IRQHandler(void) // for DAC1
       {
         flag_trans = 1;
         flag_dac = 0;
-        flag_dac_count = 0;
+        //flag_dac_count = 0;
         CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 disable
       }        
 		}
