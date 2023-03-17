@@ -189,10 +189,10 @@ int main(void)
 			SET_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 enable
 			if (flag_tx == 0)
 			{
-				if (flag_trans == 1) // to do k/36
+				if (flag_trans == 1) // to do
 				{
 					UART_command[0] = 0;
-					period_number = flag_dac_count;
+					period_number = flag_dac_count - 1;
 					message_size = SIZE_BUFFER_ADC*flag_dma_complete*4; //bytes
 					preamble = (start_byte) | (period_number << 8) | (message_size << 16);
 	
