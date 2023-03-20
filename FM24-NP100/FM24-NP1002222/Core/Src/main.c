@@ -79,7 +79,7 @@ volatile uint32_t flag_tx = 0;
 volatile uint32_t flag_rx = 0;
 volatile uint32_t flag_trans = 0;
 
-volatile uint32_t k1 = 5;
+volatile uint32_t k1 = 3;
 uint8_t flag_test = 0;
 //int test_vec = 0;
 	
@@ -91,7 +91,8 @@ volatile uint32_t* address = 0;
 	
 uint8_t UART_command[SIZE_UART_RX];
 uint8_t firstByteWait = 0;
-uint32_t k = 0;
+volatile int32_t k_ramp = 0;
+volatile uint16_t Ampl = 0;
 
 struct message_ADC message_ADC12 = {0};
 
@@ -231,6 +232,31 @@ int main(void)
 		{
 			UART_command[0] = 0; // make TEST 1 time
 			HAL_UART_Transmit_IT(&huart1, (uint8_t*)"TEST", 4);
+		}
+		else if(strncmp ((char*)UART_command, RAMP1_TX, 4) == 0)
+		{
+			UART_command[0] = 0; // make TEST 1 time
+			k_ramp = tan((2*Ampl)/SIZE_BUFFER_ADC);
+			for(uint16_t i = 0; i < SIZE_BUFFER_ADC; i++)
+			{
+				if(i < 64) Triangle_DAC3[i] = (1 + i*k_ramp);
+				else Triangle_DAC3[i] = (1 - i*k_ramp);
+			}
+			
+		}
+		else if(strncmp ((char*)UART_command, RAMP2_TX, 4) == 0)
+		{
+			UART_command[0] = 0; // make TEST 1 time
+			k_ramp = tan((1*Ampl)/SIZE_BUFFER_ADC);
+			for(uint16_t i = 0; i < SIZE_BUFFER_ADC; i++)
+			{
+				Triangle_DAC3[i] = i*k_ramp;	
+			}			
+		}
+		else if(strncmp ((char*)UART_command, AMPL_TX, 2) == 0)
+		{
+			UART_command[0] = 0; // make TEST 1 time
+			Ampl = UART_command[2] + (UART_command[3] << 8);
 		}
 		
 //		for(uint16_t i = 0; i < SIZE_BUFFER_ADC; i++)

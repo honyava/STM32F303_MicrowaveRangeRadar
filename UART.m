@@ -11,6 +11,9 @@ clear;
 % x = round(x);
 
 s = serialport("COM5", 3e6, 'Timeout', 0.5);
-s.write("STAR","char"); %% STAR - START, STOP - STOP, TEST - TEST, RESE - RESET
-data = read(s,384*1000,"uint32");
+s.write("AM","char");
+s.write(2,"uint16");
+
+%s.write("STAR","char"); %% STAR - START, STOP - STOP, TEST - TEST, RESE - RESET
+%data = read(s,384*100,"uint32");
 

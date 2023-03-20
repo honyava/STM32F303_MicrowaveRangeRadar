@@ -53,6 +53,9 @@ extern "C" {
 #define STOP_TX "STOP"
 #define TEST_TX "TEST"
 #define RESET_TX "RESE"
+#define RAMP1_TX "RAM1"
+#define RAMP2_TX "RAM2"
+#define AMPL_TX "AM"
 
 
 /* USER CODE END EM */
@@ -79,7 +82,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
 struct message_ADC
 {
 	uint32_t preamble;
-	uint32_t BUFF[SIZE_BUFFER_ADC*60];	
+	uint32_t BUFF[SIZE_BUFFER_ADC*40];	
 };
 
 /* USER CODE END Private defines */

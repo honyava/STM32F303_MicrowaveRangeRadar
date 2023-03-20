@@ -210,7 +210,7 @@ void SysTick_Handler(void)
   else 
 	{
     timeOut++;
-    if( timeOut >= 50 )
+    if( timeOut >= 25 )
 		{
       HAL_UART_AbortReceive_IT(&huart1);
       firstByteWait = 1; 
