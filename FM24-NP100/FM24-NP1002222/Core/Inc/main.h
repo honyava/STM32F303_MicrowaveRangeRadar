@@ -82,7 +82,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
 struct message_ADC
 {
 	uint32_t preamble;
-	uint32_t BUFF[SIZE_BUFFER_ADC*40];	
+	uint32_t BUFF[SIZE_BUFFER_ADC*49];
 };
 
 /* USER CODE END Private defines */

@@ -78,21 +78,21 @@ volatile uint32_t flag_dac_count = 0;
 volatile uint32_t flag_tx = 0;
 volatile uint32_t flag_rx = 0;
 volatile uint32_t flag_trans = 0;
-
-volatile uint32_t k1 = 3;
+volatile uint16_t UART_command_convert = 0;
+volatile uint8_t period_number_DAC = 10;
 uint8_t flag_test = 0;
 //int test_vec = 0;
 	
 uint8_t start_byte = 0x01;	
 uint8_t period_number = 0;
 uint16_t message_size = 0;
-uint32_t preamble = 0;	
+//uint32_t preamble = 0;	
 volatile uint32_t* address = 0;
 	
 uint8_t UART_command[SIZE_UART_RX];
 uint8_t firstByteWait = 0;
-volatile int32_t k_ramp = 0;
-volatile uint16_t Ampl = 0;
+volatile uint16_t k_ramp = 0;
+volatile uint16_t Ampl = 1000;
 
 struct message_ADC message_ADC12 = {0};
 
@@ -176,34 +176,27 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-//		switch (UART_command[0])
-//		{
-//			case 1:
-//				k = 36;
-//			case 2:
-//				k = 50;
-//			case 3:
-//				k = 100;			
-//		}
-		if (strncmp ((char*)UART_command, START_TX, 4) == 0) //to do
+		UART_command_convert = UART_command[0] + (UART_command[1] << 8);
+		if (UART_command_convert > 255) //to do
 		{
+			period_number_DAC = UART_command[1];
 			SET_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 enable
 			if (flag_tx == 0)
 			{
 				if (flag_trans == 1) // to do
 				{
 					UART_command[0] = 0;
+					UART_command[1] = 0;
 					period_number = flag_dac_count - 1;
 					message_size = SIZE_BUFFER_ADC*flag_dma_complete*4; //bytes
-					preamble = (start_byte) | (period_number << 8) | (message_size << 16);
 	
-					message_ADC12.preamble = preamble;
-					
-					HAL_UART_Transmit_IT(&huart1, (uint8_t*)&message_ADC12,  message_size + 4);
-					flag_trans = 0;
+					message_ADC12.preamble = (start_byte) | (period_number << 8) | (message_size << 16);
 					flag_dma_complete = 0;
+					flag_trans = 0;
 					flag_dac_count = 0;
-					//UART_command[0] = 0;
+					flag_tx = 1;
+					HAL_UART_Transmit_IT(&huart1, (uint8_t*)&message_ADC12,  message_size + 4);
+
 //					CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 disable
 				}
 ///////////////////////////////////////////////	for continuous sending				
@@ -219,57 +212,50 @@ int main(void)
 //				}
 			}
 		}
-		else if(strncmp ((char*)UART_command, STOP_TX, 4) == 0)
+		else if(UART_command_convert == 2)
 		{
+			UART_command[0] = 0;
 			CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 disable
 			//CLEAR_BIT(TIM2->CR1, TIM_CR1_CEN_Msk); // TIM2 disable
 		}
-		else if(strncmp ((char*)UART_command, RESET_TX, 4) == 0)
+		else if(UART_command_convert == 3)
 		{
 			HAL_NVIC_SystemReset();
 		}
-		else if(strncmp ((char*)UART_command, TEST_TX, 4) == 0)
+		else if(UART_command_convert == 4)
 		{
 			UART_command[0] = 0; // make TEST 1 time
 			HAL_UART_Transmit_IT(&huart1, (uint8_t*)"TEST", 4);
 		}
-		else if(strncmp ((char*)UART_command, RAMP1_TX, 4) == 0)
+		else if(UART_command_convert == 5)
 		{
 			UART_command[0] = 0; // make TEST 1 time
-			k_ramp = tan((2*Ampl)/SIZE_BUFFER_ADC);
+			k_ramp = ((2*Ampl)/SIZE_BUFFER_ADC) + 1;
 			for(uint16_t i = 0; i < SIZE_BUFFER_ADC; i++)
 			{
-				if(i < 64) Triangle_DAC3[i] = (1 + i*k_ramp);
-				else Triangle_DAC3[i] = (1 - i*k_ramp);
+				if(i < 64) Triangle_DAC3[i] = (0 + i*k_ramp);
+				else Triangle_DAC3[i] = (Ampl - (i - (SIZE_BUFFER_ADC/2))*k_ramp);
 			}
+			DMA2_Channel3->CMAR =(uint32_t)&Triangle_DAC3[0]; // Adress of buffer
 			
 		}
-		else if(strncmp ((char*)UART_command, RAMP2_TX, 4) == 0)
+		else if(UART_command_convert == 6)
 		{
 			UART_command[0] = 0; // make TEST 1 time
-			k_ramp = tan((1*Ampl)/SIZE_BUFFER_ADC);
+			k_ramp = ((1*Ampl)/SIZE_BUFFER_ADC) + 1;
 			for(uint16_t i = 0; i < SIZE_BUFFER_ADC; i++)
 			{
 				Triangle_DAC3[i] = i*k_ramp;	
-			}			
+			}
+			DMA2_Channel3->CMAR =(uint32_t)&Triangle_DAC3[0]; // Adress of buffer
+			
 		}
-		else if(strncmp ((char*)UART_command, AMPL_TX, 2) == 0)
+		else if(UART_command_convert == 7)   //strncmp ((char*)UART_command, AMPL_TX, 2)
 		{
 			UART_command[0] = 0; // make TEST 1 time
-			Ampl = UART_command[2] + (UART_command[3] << 8);
+			Ampl = (UART_command[2]) + (UART_command[3] << 8);
 		}
 		
-//		for(uint16_t i = 0; i < SIZE_BUFFER_ADC; i++)
-//		{
-//			if(i < 64)
-//				Triangle_DAC2[i] = (1 + i*tan((2*Ampl)/SIZE_BUFFER_ADC));
-//			else Triangle_DAC2[i] = (1 - i*tan((2*Ampl)/SIZE_BUFFER_ADC));
-//		}
-//		
-//		for(uint16_t i = 0; i < SIZE_BUFFER_ADC; i++)
-//		{
-//			Triangle_DAC2[i] = (i*tan((1*Ampl)/SIZE_BUFFER_ADC));	
-//		}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
