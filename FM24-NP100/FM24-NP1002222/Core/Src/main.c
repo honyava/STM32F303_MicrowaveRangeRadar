@@ -92,7 +92,7 @@ volatile uint32_t* address = 0;
 uint8_t UART_command[SIZE_UART_RX];
 uint8_t firstByteWait = 0;
 volatile uint16_t k_ramp = 0;
-volatile uint16_t Ampl = 1000;
+volatile uint16_t Ampl = 4095;
 
 struct message_ADC message_ADC12 = {0};
 
@@ -176,8 +176,8 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-		UART_command_convert = UART_command[0] + (UART_command[1] << 8);
-		if (UART_command_convert > 255) //to do
+		//UART_command_convert = UART_command[0] + (UART_command[1] << 8);
+		if ((UART_command[0] == 1) && (UART_command[1] != 0) && (UART_command[1] <= 14)) 
 		{
 			period_number_DAC = UART_command[1];
 			SET_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 enable
@@ -212,22 +212,22 @@ int main(void)
 //				}
 			}
 		}
-		else if(UART_command_convert == 2)
+		else if(UART_command[0] == 2)
 		{
 			UART_command[0] = 0;
 			CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 disable
 			//CLEAR_BIT(TIM2->CR1, TIM_CR1_CEN_Msk); // TIM2 disable
 		}
-		else if(UART_command_convert == 3)
+		else if(UART_command[0] == 3)
 		{
 			HAL_NVIC_SystemReset();
 		}
-		else if(UART_command_convert == 4)
+		else if(UART_command[0] == 4)
 		{
 			UART_command[0] = 0; // make TEST 1 time
 			HAL_UART_Transmit_IT(&huart1, (uint8_t*)"TEST", 4);
 		}
-		else if(UART_command_convert == 5)
+		else if(UART_command[0] == 5)
 		{
 			UART_command[0] = 0; // make TEST 1 time
 			k_ramp = ((2*Ampl)/SIZE_BUFFER_ADC) + 1;
@@ -239,7 +239,7 @@ int main(void)
 			DMA2_Channel3->CMAR =(uint32_t)&Triangle_DAC3[0]; // Adress of buffer
 			
 		}
-		else if(UART_command_convert == 6)
+		else if(UART_command[0] == 6)
 		{
 			UART_command[0] = 0; // make TEST 1 time
 			k_ramp = ((1*Ampl)/SIZE_BUFFER_ADC) + 1;
@@ -250,7 +250,7 @@ int main(void)
 			DMA2_Channel3->CMAR =(uint32_t)&Triangle_DAC3[0]; // Adress of buffer
 			
 		}
-		else if(UART_command_convert == 7)   //strncmp ((char*)UART_command, AMPL_TX, 2)
+		else if(UART_command[0] == 7)   //strncmp ((char*)UART_command, AMPL_TX, 2)
 		{
 			UART_command[0] = 0; // make TEST 1 time
 			Ampl = (UART_command[2]) + (UART_command[3] << 8);
