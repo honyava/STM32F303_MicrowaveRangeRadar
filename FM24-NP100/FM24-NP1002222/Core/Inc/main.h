@@ -49,13 +49,14 @@ extern "C" {
 /* USER CODE BEGIN EM */
 #define SIZE_BUFFER_ADC 128
 #define SIZE_UART_RX 4
-#define START_TX "STAR"
-#define STOP_TX "STOP"
-#define TEST_TX "TEST"
-#define RESET_TX "RESE"
-#define RAMP1_TX "RAM1"
-#define RAMP2_TX "RAM2"
-#define AMPL_TX "AM"
+
+//#define START_TX "STAR"
+//#define STOP_TX "STOP"
+//#define TEST_TX "TEST"
+//#define RESET_TX "RESE"
+//#define RAMP1_TX "RAM1"
+//#define RAMP2_TX "RAM2"
+//#define AMPL_TX "AM"
 
 
 /* USER CODE END EM */

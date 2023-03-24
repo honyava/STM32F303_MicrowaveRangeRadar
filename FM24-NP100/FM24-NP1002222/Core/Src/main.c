@@ -69,9 +69,7 @@ const uint16_t Triangle_DAC[128] = {0,	64,	128,	192,	256,	320,	384,	448,	512,	57
 uint16_t Triangle_DAC3[128] = {0,};
 	
 volatile uint32_t BUFF_ADC1_2[SIZE_BUFFER_ADC] = {0,};
-//uint32_t volatile BUFF_ADC1_2_half[SIZE_BUFFER_ADC/2] = {0,};
-//volatile uint32_t BUFF_ADC1_2_all[SIZE_BUFFER_ADC*3*10] = {0,};
-uint8_t flag_dma_half = 0;
+//uint8_t flag_dma_half = 0;
 volatile uint32_t flag_dma_complete = 0;
 volatile uint32_t flag_dac = 0;	
 volatile uint32_t flag_dac_count = 0;	
@@ -80,17 +78,16 @@ volatile uint32_t flag_rx = 0;
 volatile uint32_t flag_trans = 0;
 volatile uint16_t UART_command_convert = 0;
 volatile uint8_t period_number_DAC = 10;
-uint8_t flag_test = 0;
+
 //int test_vec = 0;
 	
 uint8_t start_byte = 0x01;	
-uint8_t period_number = 0;
-uint16_t message_size = 0;
-//uint32_t preamble = 0;	
+volatile uint8_t period_number = 0;
+volatile uint16_t message_size = 0;	
 volatile uint32_t* address = 0;
 	
 uint8_t UART_command[SIZE_UART_RX];
-uint8_t firstByteWait = 0;
+volatile uint8_t firstByteWait = 0;
 volatile uint16_t k_ramp = 0;
 volatile uint16_t Ampl = 4095;
 
@@ -112,12 +109,6 @@ static void MX_USART1_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-//typedef enum
-//{
-//	Reset = 0,
-//	Start = 1,
-//	Stop = 2,
-//}StateStatus;
 
 /* USER CODE END 0 */
 
@@ -162,7 +153,6 @@ int main(void)
 	HAL_OPAMP_Start(&hopamp3);
 	HAL_OPAMP_Start(&hopamp4);
 	
-	
 	ADC1_2_Dual_Init();
 	DAC1_Init();
 	TIM2_Init();
@@ -199,17 +189,6 @@ int main(void)
 
 //					CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 disable
 				}
-///////////////////////////////////////////////	for continuous sending				
-//				if (flag_dma_half == 1)
-//				{
-//					HAL_UART_Transmit_IT(&huart1, (uint8_t*)BUFF_ADC1_2_half, SIZE_BUFFER_ADC*2);
-//					flag_dma_half = 0;
-//				}
-//				else if (flag_dma_complete == 1)
-//				{
-//					HAL_UART_Transmit_IT(&huart1, (uint8_t*)BUFF_ADC1_2_half, SIZE_BUFFER_ADC*2);
-//					flag_dma_complete = 0;
-//				}
 			}
 		}
 		else if(UART_command[0] == 2)

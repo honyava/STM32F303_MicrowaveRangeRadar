@@ -6,7 +6,6 @@ extern const uint16_t Triangle_DAC[128];
 	
 void ADC1_2_Dual_Init(void)
 {
-	
 	SET_BIT(RCC->AHBENR,RCC_AHBENR_ADC12EN);
 	RCC->AHBENR |= RCC_AHBENR_DMA1EN;
 	/////////Multi-mode
@@ -28,7 +27,6 @@ void ADC1_2_Dual_Init(void)
 	MODIFY_REG(ADC1->CFGR, ADC_CFGR_EXTEN, 1 << ADC_CFGR_EXTEN_Pos); //External TRG enable, Rising edge	
 	MODIFY_REG(ADC1->SMPR1, ADC_SMPR1_SMP3, 1 << ADC_SMPR1_SMP3_Pos); // Channel 3, 15 cycles for conversation	
 	SET_BIT(ADC1->CFGR, ADC_CFGR_DMAEN); // Enable DMA
-	
 	/////////// Setting ADC2
 	CLEAR_BIT(ADC2->CFGR, ADC_CFGR_RES_0);
 	CLEAR_BIT(ADC2->CFGR, ADC_CFGR_RES_1); // Resolution 12 bit
@@ -84,14 +82,11 @@ void DAC1_Init(void) // for T2 TSEL = 100     // DMA2 Channel 3
 	SET_BIT(RCC->APB1ENR,RCC_APB1ENR_DAC1EN); // clock for DAC
 	RCC->AHBENR |= RCC_AHBENR_DMA2EN; // clock for DMA2
 	SET_BIT(DAC->CR, DAC_CR_EN1); // DAC channel1 enable
-	
 	SET_BIT(DAC->CR,DAC_CR_DMAEN1);
 	MODIFY_REG(DAC->CR, DAC_CR_MAMP1, 11 << DAC_CR_MAMP1_Pos); // Unmask bits[11:0] of LFSR/ triangle amplitude equal to 4095
 	MODIFY_REG(DAC->CR, DAC_CR_TSEL1, 4 << DAC_CR_TSEL1_Pos); // Timer 2 TRGO event
 	SET_BIT(DAC->CR,DAC_CR_TEN1); // DAC channel1 trigger enable
-	//MODIFY_REG(DAC->CR, DAC_CR_WAVE1, 2 << DAC_CR_WAVE1_Pos); // Triangle wave generation enabled
 	CLEAR_BIT(DAC->SWTRIGR, DAC_SWTRIGR_SWTRIG1); //DAC channel1 software trigger disabled
-	
 	// Init DMA
 	DMA2_Channel3->CPAR = (uint32_t)&DAC->DHR12R1; // Adress of data
   DMA2_Channel3->CMAR =(uint32_t)&Triangle_DAC[0]; // Adress of buffer
@@ -123,6 +118,3 @@ void TIM2_Init(void)
 	SET_BIT(TIM2->CR1, TIM_CR1_CEN_Msk); // TIM2 enable
 	NVIC_EnableIRQ(TIM2_IRQn);	
 }
-
-
-
