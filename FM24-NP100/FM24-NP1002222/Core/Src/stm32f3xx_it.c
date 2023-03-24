@@ -268,8 +268,9 @@ void DMA1_Channel1_IRQHandler(void) // for ADC1_2 (dual)
 				message_ADC12.BUFF[i + (SIZE_BUFFER_ADC*flag_dma_complete)] = BUFF_ADC1_2[i];
 			}
 			flag_dma_complete++;
+			HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
 		}
-//		HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+		
 	}
 }
 

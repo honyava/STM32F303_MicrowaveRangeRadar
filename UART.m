@@ -17,7 +17,7 @@ s.write(0x04060007,"uint32"); % ampl = 3590
 pause(1);
 s.write(6,"uint32"); % RAMP2
 pause(1);
-s.write(0x0401,"uint32"); % START + 9 periods 
+s.write(0x0401,"uint32"); % START + 4 periods 
 data = read(s,384*100,"uint32");
 
 
