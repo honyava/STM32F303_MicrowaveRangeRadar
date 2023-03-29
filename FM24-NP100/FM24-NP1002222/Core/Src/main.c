@@ -209,11 +209,12 @@ int main(void)
 		else if(UART_command[0] == 5)
 		{
 			UART_command[0] = 0; // make TEST 1 time
+			UART_command[1] = 0;
 			k_ramp = ((2*Ampl)/SIZE_BUFFER_ADC) + 1;
 			for(uint16_t i = 0; i < SIZE_BUFFER_ADC; i++)
 			{
-				if(i < 64) Triangle_DAC3[i] = (0 + i*k_ramp);
-				else Triangle_DAC3[i] = (Ampl - (i - (SIZE_BUFFER_ADC/2))*k_ramp);
+				if(i < 65) Triangle_DAC3[i] = (0 + i*k_ramp);
+				else Triangle_DAC3[i] = Triangle_DAC3[128 - i];
 			}
 			DMA2_Channel3->CMAR =(uint32_t)&Triangle_DAC3[0]; // Adress of buffer
 			
@@ -221,6 +222,7 @@ int main(void)
 		else if(UART_command[0] == 6)
 		{
 			UART_command[0] = 0; // make TEST 1 time
+			UART_command[1] = 0;
 			k_ramp = ((1*Ampl)/SIZE_BUFFER_ADC) + 1;
 			for(uint16_t i = 0; i < SIZE_BUFFER_ADC; i++)
 			{
@@ -231,8 +233,11 @@ int main(void)
 		}
 		else if(UART_command[0] == 7)   //strncmp ((char*)UART_command, AMPL_TX, 2)
 		{
-			UART_command[0] = 0; // make TEST 1 time
+			HAL_Delay(100);
 			Ampl = (UART_command[2]) + (UART_command[3] << 8);
+			UART_command[0] = UART_command[1]; // make TEST 1 time
+			UART_command[2] = 0;
+			UART_command[3] = 0;
 		}
 		
     /* USER CODE END WHILE */
