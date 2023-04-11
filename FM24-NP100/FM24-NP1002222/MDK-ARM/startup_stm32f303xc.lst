@@ -624,12 +624,12 @@ ARM Macro Assembler    Page 10
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp.sp --apcs=
 interwork --depend=fm24-np1002222\startup_stm32f303xc.d -ofm24-np1002222\startu
-p_stm32f303xc.o -I.\RTE\_FM24-NP1002222 -IC:\Users\User\AppData\Local\Arm\Packs
-\ARM\CMSIS\5.9.0\CMSIS\Core\Include -IC:\Users\User\AppData\Local\Arm\Packs\Kei
-l\STM32F3xx_DFP\2.2.2\Drivers\CMSIS\Device\ST\STM32F3xx\Include --predefine="__
-UVISION_VERSION SETA 536" --predefine="_RTE_ SETA 1" --predefine="STM32F303xC S
-ETA 1" --predefine="_RTE_ SETA 1" --list=startup_stm32f303xc.lst startup_stm32f
-303xc.s
+p_stm32f303xc.o -I.\RTE\_FM24-NP1002222 -IC:\Users\retin\AppData\Local\Arm\Pack
+s\ARM\CMSIS\5.9.0\CMSIS\Core\Include -IC:\Users\retin\AppData\Local\Arm\Packs\K
+eil\STM32F3xx_DFP\2.2.2\Drivers\CMSIS\Device\ST\STM32F3xx\Include --predefine="
+__UVISION_VERSION SETA 536" --predefine="_RTE_ SETA 1" --predefine="STM32F303xC
+ SETA 1" --predefine="_RTE_ SETA 1" --list=startup_stm32f303xc.lst startup_stm3
+2f303xc.s
 
 
 

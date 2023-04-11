@@ -235,6 +235,7 @@ int main(void)
 		{
 			HAL_Delay(100);
 			Ampl = (UART_command[2]) + (UART_command[3] << 8);
+//      if (Ampl > 1000) Ampl = 1000;
 			UART_command[0] = UART_command[1]; // make TEST 1 time
 			UART_command[2] = 0;
 			UART_command[3] = 0;
