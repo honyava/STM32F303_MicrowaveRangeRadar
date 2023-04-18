@@ -278,8 +278,8 @@ void DMA2_Channel3_IRQHandler(void) // for DAC1
 {
 	if(READ_BIT(DMA2->ISR, DMA_ISR_TCIF3)) // transfer complete
 	{
-		//SET_BIT(DMA2->IFCR, DMA_IFCR_CGIF3_Msk);
-		SET_BIT(DMA2->IFCR, DMA_IFCR_CTCIF3_Msk); // Resetting the flag of interrupt
+		SET_BIT(DMA2->IFCR, DMA_IFCR_CGIF3_Msk);
+		//SET_BIT(DMA2->IFCR, DMA_IFCR_CTCIF3_Msk); // Resetting the flag of interrupt
 		if (READ_BIT(TIM8->CR1, TIM_CR1_CEN_Msk))
 		{  
 			flag_dac = 1;
