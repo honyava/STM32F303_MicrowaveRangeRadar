@@ -122,8 +122,7 @@ grid on;
 function SendDeviation(deviation, RAMP)
     Ampl_u = round(deviation/620.424); % deviatin - kHz;  Ampl_u - mV.
     Ampl_u = round(Ampl_u/0.8059);
-    command = uint32(7) + bitshift(uint32(RAMP), 8) + uint32(bitshift(uint32(Ampl_u), 16));
-%     command = uint32(strcat(0,command));
+    command = uint32(bitshift(uint32(7), 24) + bitshift(uint32(RAMP), 12) + uint32(Ampl_u));
     s.write(command,"uint32");
 end
 
