@@ -11,6 +11,10 @@ clear;
 % max period_Number = 14
 % Example : s.write(0x0E060507,"uint32"); % ampl = 3590 
 
+START = 1; STOP = 2; RESET = 3; TEST = 4; RAMP1 = 5; RAMP2 = 6; AMPL = 7;
+
+
+
 % V_my = [64 128 256 400 550 700 850 1000 1200 1400 1600 1800 2000 2200 2400 2600 3000 3250 3500 4000];
 % V_my = V_my*3300/4095; % преобразование значений АЦП в милливольты
 % f_div = [34 68 132 200 264 332 436 500 608 712 856 960 1068 1184 1294 1410 1662 1824 2004 2436]*10^6;
@@ -29,7 +33,7 @@ clear;
 % legend('Измеренные данные', 'Данные из даташита');
 
 %SendDeviation(500e3, RAMP1); %deviation - kHz (in function 500e3 = 500MHz)
-SendDeviation(500e3, 5);
+SendDeviation(250e3, RAMP1);
 s = serialport("COM5", 3e6, 'Timeout', 1);
 %s.write(0x09060607,"uint32"); % ampl = 3590 
   pause(1);
@@ -122,7 +126,8 @@ grid on;
 function SendDeviation(deviation, RAMP)
     Ampl_u = round(deviation/620.424); % deviatin - kHz;  Ampl_u - mV.
     Ampl_u = round(Ampl_u/0.8059);
-    command = uint32(bitshift(uint32(7), 24) + bitshift(uint32(RAMP), 12) + uint32(Ampl_u));
+%     command = uint32(0);
+    command = uint32(7) + bitshift(uint32(RAMP), 8) + uint32(bitshift(uint32(Ampl_u), 16));
     s.write(command,"uint32");
 end
 
