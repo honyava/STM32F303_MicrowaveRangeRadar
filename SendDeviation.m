@@ -1,4 +1,4 @@
-function SendDeviation(deviation, RAMP)
+function SendDeviation(deviation, RAMP, s)
     Ampl_u = round(deviation/620.424); % deviatin - kHz;  Ampl_u - mV.
     Ampl_u = round(Ampl_u/0.8059);
 %     command = uint32(0);

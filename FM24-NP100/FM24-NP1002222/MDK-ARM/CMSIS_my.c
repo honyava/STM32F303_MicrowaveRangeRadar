@@ -101,7 +101,7 @@ void DAC1_Init(void) // for T2 TSEL = 100     // DMA2 Channel 3
 	DMA2_Channel3->CNDTR |= (128 << DMA_CNDTR_NDT_Pos);
 	SET_BIT(DMA2_Channel3->CCR, DMA_CCR_EN); // Enable DMA
 	NVIC_EnableIRQ(DMA2_Channel3_IRQn);
-	NVIC_SetPriority(DMA2_Channel3_IRQn,2);
+	NVIC_SetPriority(DMA2_Channel3_IRQn,1);
 	
 }
 

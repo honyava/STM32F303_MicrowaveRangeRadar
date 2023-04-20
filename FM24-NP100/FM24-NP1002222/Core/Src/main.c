@@ -47,6 +47,17 @@ OPAMP_HandleTypeDef hopamp4;
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
+
+enum {
+  START    = 1,
+  STOP     = 2,
+  RESET_C  = 3,
+  TEST     = 4,
+  RAMP1    = 5,
+  RAMP2    = 6,
+  AMPL     = 7
+};
+
 const uint16_t Triangle_DAC[128] = {0,	64,	128,	192,	256,	320,	384,	448,	512,	576,	640,	704,	768,
 	832,	896,	960,	1024,	1088,	1152,	1216,	1280,	1344,	1408,	1472,	1536,	1600,	1664,	1728,	1792,	1856,
 	1920,	1984,	2048,	2111,	2175,	2239,	2303,	2367,	2431,	2495,	2559,	2623,	2687,	2751,	2815,	2879,	2943,
@@ -160,6 +171,7 @@ int main(void)
 	
 	firstByteWait = 1;
 	HAL_UART_Receive_IT(&huart1, UART_command, 1);
+	
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -167,7 +179,7 @@ int main(void)
   while (1)
   {
 		//UART_command_convert = UART_command[0] + (UART_command[1] << 8);
-		if ((UART_command[0] == 1) && (UART_command[1] != 0) && (UART_command[1] <= 14)) 
+		if ((UART_command[0] == START) && (UART_command[1] != 0) && (UART_command[1] <= 14)) 
 		{
 			period_number_DAC = UART_command[1];
 			SET_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 enable
@@ -191,22 +203,22 @@ int main(void)
 				}
 			}
 		}
-		else if(UART_command[0] == 2)
+		else if(UART_command[0] == STOP)
 		{
 			UART_command[0] = 0;
 			CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 disable
 			//CLEAR_BIT(TIM2->CR1, TIM_CR1_CEN_Msk); // TIM2 disable
 		}
-		else if(UART_command[0] == 3)
+		else if(UART_command[0] == RESET_C)
 		{
 			HAL_NVIC_SystemReset();
 		}
-		else if(UART_command[0] == 4)
+		else if(UART_command[0] == TEST)
 		{
 			UART_command[0] = 0; // make TEST 1 time
 			HAL_UART_Transmit_IT(&huart1, (uint8_t*)"TEST", 4);
 		}
-		else if(UART_command[0] == 5)
+		else if(UART_command[0] == RAMP1)
 		{
 			UART_command[0] = 0; // make TEST 1 time
 			UART_command[1] = 0;
@@ -219,7 +231,7 @@ int main(void)
 			DMA2_Channel3->CMAR =(uint32_t)&Triangle_DAC3[0]; // Adress of buffer
 			
 		}
-		else if(UART_command[0] == 6)
+		else if(UART_command[0] == RAMP2)
 		{
 			UART_command[0] = 0; // make TEST 1 time
 			UART_command[1] = 0;
@@ -231,7 +243,7 @@ int main(void)
 			DMA2_Channel3->CMAR =(uint32_t)&Triangle_DAC3[0]; // Adress of buffer
 			
 		}
-		else if(UART_command[0] == 7)   //strncmp ((char*)UART_command, AMPL_TX, 2)
+		else if(UART_command[0] == AMPL)   //strncmp ((char*)UART_command, AMPL_TX, 2)
 		{
 			HAL_Delay(100);
 			Ampl = (UART_command[2]) + (UART_command[3] << 8);

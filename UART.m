@@ -33,7 +33,6 @@ START = 1; STOP = 2; RESET = 3; TEST = 4; RAMP1 = 5; RAMP2 = 6; AMPL = 7;
 % legend('Измеренные данные', 'Данные из даташита');
 
 %SendDeviation(500e3, RAMP1); %deviation - kHz (in function 500e3 = 500MHz)
-SendDeviation(250e3, RAMP1);
 s = serialport("COM5", 3e6, 'Timeout', 1);
 %s.write(0x09060607,"uint32"); % ampl = 3590 
   pause(1);
