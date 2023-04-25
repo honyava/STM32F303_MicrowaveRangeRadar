@@ -45,7 +45,6 @@ pause(0.5);
 SendDeviation(250e3, RAMP1, s);
 pause(0.5);
 while(true)
-    
     if count < 150
         num = uint32(0);
         s.write(0x0401,"uint32");
@@ -53,62 +52,61 @@ while(true)
         data = uint32(read(s,4*128*4 + 1,"uint32"));
         while(length(data) < 4*128*4) % Ждем, пока длина данных станет больше или равной 4*128*4      
         end
-%         pause(0.5);
+    %         pause(0.5);
         count = count + 1;
     else
         break;
     end
     
-if (data(1) == hex2dec('20000401'))
+    if (data(1) == hex2dec('20000401'))
+        
+        for i = 2:length(data)
+            num = uint32(data(i)); % исходное 32-битное число
+            mask = uint32(hex2dec('FFFF')); % маска для 16-битного числа
+            Channel1(i - 1) = bitand(num, mask); % получить младшие 16 бит
+            Channel2(i - 1) = bitand(bitshift(num, -16), mask); % получить старшие 16 бит
+        end
+        All_Channel = cat(1,Channel1, Channel2);
     
-    for i = 2:length(data)
-        num = uint32(data(i)); % исходное 32-битное число
-        mask = uint32(hex2dec('FFFF')); % маска для 16-битного числа
-        Channel1(i - 1) = bitand(num, mask); % получить младшие 16 бит
-        Channel2(i - 1) = bitand(bitshift(num, -16), mask); % получить старшие 16 бит
+    %     All_Channel(3, (count - 1)*128*4 + 1) = first_num;
+    %     All_Channel(4, (count - 1)*128*4 + 1) = second_num;
+    %     All_Channel(5, (count - 1)*128*4 + 1) = third_num;
+         All_Channel_new = cat(2,All_Channel_new, All_Channel);
+    %     All_Channel_new(3, (count - 1)*128*4 + 1) = first_num;
+    %     All_Channel_new(4, (count - 1)*128*4 + 1) = second_num;
+    %     All_Channel_new(5, (count - 1)*128*4 + 1) = third_num;
+        if (mod(count, 8) == 0)
+            fs = 576e3; % Частота дискретизации
+            t = (0:numel(All_Channel_new(1,:))-1) * 1/fs * 1000; % Преобразование в миллисекунды
+            
+            
+            subplot(2, 1, 1) % Создание первого графика
+            plot(t,All_Channel_new(1,:)) % График отсчетов Channel1
+            title("Channel 1")
+            xlabel("Time (ms)"); % Изменяем подпись оси x
+            ylabel("Amplitude")
+            grid on;
+            
+            Y = fft(All_Channel_new(1,:));
+            L = length(All_Channel_new(1,:));
+            P2 = abs(Y/L);
+            P1 = P2(1:L/2+1);
+            P1(2:end-1) = 2*P1(2:end-1);
+            f = (0:L/2)*(1/(L/2))*(fs/2);
+            
+            subplot(2, 1, 2) % Создание второго графика
+            plot(f,P1) 
+            title("Single-Sided Amplitude Spectrum of S(t)")
+            xlabel("f (Hz)")
+            ylabel("|P1(f)|")
+            xlim([0, 20*10^3]) % Ограничение оси x до 10^5
+            grid on;
+            % drawnow;
+            All_Channel_new = [];
+            data = [];
+            % clear All_Channel_new;
+        end
     end
-    All_Channel = cat(1,Channel1, Channel2);
-
-%     All_Channel(3, (count - 1)*128*4 + 1) = first_num;
-%     All_Channel(4, (count - 1)*128*4 + 1) = second_num;
-%     All_Channel(5, (count - 1)*128*4 + 1) = third_num;
-     All_Channel_new = cat(2,All_Channel_new, All_Channel);
-%     All_Channel_new(3, (count - 1)*128*4 + 1) = first_num;
-%     All_Channel_new(4, (count - 1)*128*4 + 1) = second_num;
-%     All_Channel_new(5, (count - 1)*128*4 + 1) = third_num;
-if (mod(count, 8) == 0)
-fs = 576e3; % Частота дискретизации
-t = (0:numel(All_Channel_new(1,:))-1) * 1/fs * 1000; % Преобразование в миллисекунды
-
-
-subplot(2, 1, 1) % Создание первого графика
-plot(t,All_Channel_new(1,:)) % График отсчетов Channel1
-title("Channel 1")
-xlabel("Time (ms)"); % Изменяем подпись оси x
-ylabel("Amplitude")
-grid on;
-
-Y = fft(All_Channel_new(1,:));
-L = length(All_Channel_new(1,:));
-P2 = abs(Y/L);
-P1 = P2(1:L/2+1);
-P1(2:end-1) = 2*P1(2:end-1);
-f = (0:L/2)*(1/(L/2))*(fs/2);
-
-subplot(2, 1, 2) % Создание второго графика
-plot(f,P1) 
-title("Single-Sided Amplitude Spectrum of S(t)")
-xlabel("f (Hz)")
-ylabel("|P1(f)|")
-xlim([0, 20*10^3]) % Ограничение оси x до 10^5
-grid on;
-% drawnow;
-All_Channel_new = [];
-data = [];
-% clear All_Channel_new;
-end
-end
-
 end
 
 
