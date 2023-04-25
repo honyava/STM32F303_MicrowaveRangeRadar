@@ -179,7 +179,7 @@ int main(void)
   while (1)
   {
 		//UART_command_convert = UART_command[0] + (UART_command[1] << 8);
-		if ((UART_command[0] == START) && (UART_command[1] != 0) && (UART_command[1] <= 14)) 
+		if ((UART_command[0] == START) && (UART_command[1] != 0))  //&& (UART_command[1] <= 14)
 		{
 			period_number_DAC = UART_command[1];
 			SET_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 enable

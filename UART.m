@@ -33,7 +33,7 @@ START = 1; STOP = 2; RESET = 3; TEST = 4; RAMP1 = 5; RAMP2 = 6; AMPL = 7;
 % legend('Измеренные данные', 'Данные из даташита');
 
 %SendDeviation(500e3, RAMP1); %deviation - kHz (in function 500e3 = 500MHz)
-s = serialport("COM5", 3e6, 'Timeout', 1);
+s = serialport("COM6", 3e6, 'Timeout', 1);
 %s.write(0x09060607,"uint32"); % ampl = 3590 
   pause(1);
  %s.write(6,"uint32"); % RAMP2
@@ -42,18 +42,19 @@ s = serialport("COM5", 3e6, 'Timeout', 1);
 count = 0;
 All_Channel_new = [];
 while(true)
-    if count < 10
+    if count < 150
         num = uint32(0);
-        s.write(0x0401,"uint32");
+        s.write(0x0801,"uint32");
         pause(0.2);
-        data = uint32(read(s,4*128*4 + 1,"uint32"));
+        data = uint32(read(s,8*128*4 + 1,"uint32"));
+        pause(0.7);
         count = count + 1;
     else
         break;
     end
     
-if (data(1) == 536871937)
-    pause(0.5);
+if (data(1) == 1073743873)
+    
     for i = 2:length(data)
         num = uint32(data(i)); % исходное 32-битное число
         mask = uint32(hex2dec('FFFF')); % маска для 16-битного числа
@@ -69,8 +70,6 @@ if (data(1) == 536871937)
 %     All_Channel_new(3, (count - 1)*128*4 + 1) = first_num;
 %     All_Channel_new(4, (count - 1)*128*4 + 1) = second_num;
 %     All_Channel_new(5, (count - 1)*128*4 + 1) = third_num;
-end
-end
 
 Y = fft(Channel1());
 L = length(Channel1);
@@ -83,7 +82,14 @@ plot(f,P1)
 title("Single-Sided Amplitude Spectrum of S(t)")
 xlabel("f (Hz)")
 ylabel("|P1(f)|")
+xlim([0, 0.02*10^5]) % Ограничение оси x до 10^5
 grid on;
+drawnow;
+end
+
+end
+
+
 % c = 3e8; % скорость света
 % numSamples = L;
 % % Определяем заданную полосу частот
