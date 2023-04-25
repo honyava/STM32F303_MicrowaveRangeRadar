@@ -41,17 +41,14 @@ s = serialport("COM6", 3e6, 'Timeout', 1);
 % s.write(0x0401,"uint32"); % START + 4 periods 
 count = 0;
 All_Channel_new = [];
-pause(0.5);
-SendDeviation(250e3, RAMP1, s);
-pause(0.5);
 while(true)
-    
+    All_Channel_new = [];
     if count < 150
         num = uint32(0);
         s.write(0x0801,"uint32");
         pause(0.2);
         data = uint32(read(s,8*128*4 + 1,"uint32"));
-        pause(0.7);
+        pause(0.75);
         count = count + 1;
     else
         break;
@@ -74,7 +71,7 @@ if (data(1) == hex2dec('40000801'))
 %     All_Channel_new(3, (count - 1)*128*4 + 1) = first_num;
 %     All_Channel_new(4, (count - 1)*128*4 + 1) = second_num;
 %     All_Channel_new(5, (count - 1)*128*4 + 1) = third_num;
-if (mod(count, 8) == 0)
+if (mod(count,8) == 0)
 subplot(2, 1, 1) % Создание первого графика
 plot(All_Channel_new(1,:)) % График отсчетов Channel1
 title("Channel 1")
@@ -97,7 +94,7 @@ ylabel("|P1(f)|")
 xlim([0, 2*10^3]) % Ограничение оси x до 10^5
 grid on;
 % drawnow;
-All_Channel_new = [];
+All_Channel_new = zeros(2, length(All_Channel_new(1,:)));
 % clear All_Channel_new;
 end
 end
