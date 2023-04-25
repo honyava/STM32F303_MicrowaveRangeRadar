@@ -35,7 +35,7 @@ START = 1; STOP = 2; RESET = 3; TEST = 4; RAMP1 = 5; RAMP2 = 6; AMPL = 7;
 %SendDeviation(500e3, RAMP1); %deviation - kHz (in function 500e3 = 500MHz)
 s = serialport("COM6", 3e6, 'Timeout', 1);
 %s.write(0x09060607,"uint32"); % ampl = 3590 
-  pause(1);
+pause(1);
  %s.write(6,"uint32"); % RAMP2
 % pause(1);
 % s.write(0x0401,"uint32"); % START + 4 periods 
@@ -48,16 +48,18 @@ while(true)
     
     if count < 150
         num = uint32(0);
-        s.write(0x0801,"uint32");
+        s.write(0x0401,"uint32");
         pause(0.2);
-        data = uint32(read(s,8*128*4 + 1,"uint32"));
-        pause(0.7);
+        data = uint32(read(s,4*128*4 + 1,"uint32"));
+        while(length(data) < 4*128*4) % Ждем, пока длина данных станет больше или равной 4*128*4      
+        end
+%         pause(0.5);
         count = count + 1;
     else
         break;
     end
     
-if (data(1) == hex2dec('40000801'))
+if (data(1) == hex2dec('20000401'))
     
     for i = 2:length(data)
         num = uint32(data(i)); % исходное 32-битное число
@@ -75,10 +77,14 @@ if (data(1) == hex2dec('40000801'))
 %     All_Channel_new(4, (count - 1)*128*4 + 1) = second_num;
 %     All_Channel_new(5, (count - 1)*128*4 + 1) = third_num;
 if (mod(count, 8) == 0)
+fs = 576e3; % Частота дискретизации
+t = (0:numel(All_Channel_new(1,:))-1) * 1/fs * 1000; % Преобразование в миллисекунды
+
+
 subplot(2, 1, 1) % Создание первого графика
-plot(All_Channel_new(1,:)) % График отсчетов Channel1
+plot(t,All_Channel_new(1,:)) % График отсчетов Channel1
 title("Channel 1")
-xlabel("Sample Number")
+xlabel("Time (ms)"); % Изменяем подпись оси x
 ylabel("Amplitude")
 grid on;
 
@@ -87,17 +93,18 @@ L = length(All_Channel_new(1,:));
 P2 = abs(Y/L);
 P1 = P2(1:L/2+1);
 P1(2:end-1) = 2*P1(2:end-1);
-f = (0:L/2)*(1/(L/2))*(576e3/2);
+f = (0:L/2)*(1/(L/2))*(fs/2);
 
 subplot(2, 1, 2) % Создание второго графика
 plot(f,P1) 
 title("Single-Sided Amplitude Spectrum of S(t)")
 xlabel("f (Hz)")
 ylabel("|P1(f)|")
-xlim([0, 2*10^3]) % Ограничение оси x до 10^5
+xlim([0, 20*10^3]) % Ограничение оси x до 10^5
 grid on;
 % drawnow;
 All_Channel_new = [];
+data = [];
 % clear All_Channel_new;
 end
 end
