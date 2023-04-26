@@ -74,7 +74,7 @@ void TIM8_Init(void)
 	TIM8->CR1 &= ~TIM_CR1_DIR_Msk; // straight count
 	MODIFY_REG(TIM8->CR2, TIM_CR2_MMS, 2 << TIM_CR2_MMS_Pos); // Update Event for ADC1
 //	SET_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 enable
-	NVIC_SetPriority(TIM8_UP_IRQn,2);
+	NVIC_SetPriority(TIM8_UP_IRQn,3);
 	NVIC_EnableIRQ(TIM8_UP_IRQn);
 }
 
@@ -101,7 +101,7 @@ void DAC1_Init(void) // for T2 TSEL = 100     // DMA2 Channel 3
 	DMA2_Channel3->CCR |= (1 << DMA_CCR_MSIZE_Pos); //memmory data size 16b (half-word)
 	DMA2_Channel3->CNDTR |= (128 << DMA_CNDTR_NDT_Pos);
 	SET_BIT(DMA2_Channel3->CCR, DMA_CCR_EN); // Enable DMA
-	NVIC_SetPriority(DMA2_Channel3_IRQn,1);
+	NVIC_SetPriority(DMA2_Channel3_IRQn,0);
 	NVIC_EnableIRQ(DMA2_Channel3_IRQn);
 	
 }
@@ -121,3 +121,21 @@ void TIM2_Init(void)
 	NVIC_EnableIRQ(TIM2_IRQn);
 	
 }
+// Function to send an array of data via UART
+//void send_data_via_uart(uint8_t* data, uint16_t length)
+//{
+//  // Enable interrupt on transmission completion
+//  USART1->CR1 |= USART_CR1_TCIE;
+
+//  // Send data
+//  for (uint16_t i = 0; i < length; i++)
+//  {
+//    while (!(USART1->ISR & USART_ISR_TXE)); // Wait for the transmission buffer to be empty
+//    USART1->TDR = data[i]; // Write data to the data register
+//  }
+//  
+//  while (!(USART1->ISR & USART_ISR_TC)); // Wait for the transmission to complete
+
+//  // Disable interrupt on transmission completion
+//  USART1->CR1 &= ~USART_CR1_TCIE;
+//}

@@ -75,11 +75,13 @@ void TIM2_Init(void);
 void DAC1_Init(void);
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart);
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
+//void send_data_via_uart(uint8_t* data, uint16_t length);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
 
 /* USER CODE BEGIN Private defines */
+
 struct message_ADC
 {
 	uint32_t preamble;

@@ -171,7 +171,6 @@ int main(void)
 	
 	firstByteWait = 1;
 	HAL_UART_Receive_IT(&huart1, UART_command, 1);
-	
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -195,9 +194,9 @@ int main(void)
 					message_ADC12.preamble = (start_byte) | (period_number << 8) | (message_size << 16);
 					flag_dma_complete = 0;
 					flag_trans = 0;
-					flag_dac_count = 0;
 					flag_tx = 1;
 					HAL_UART_Transmit_IT(&huart1, (uint8_t*)&message_ADC12,  message_size + 4);
+					flag_dac_count = 0;
 
 //					CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 disable
 				}
@@ -437,7 +436,7 @@ static void MX_USART1_UART_Init(void)
 {
 
   /* USER CODE BEGIN USART1_Init 0 */
-
+	HAL_NVIC_SetPriority(USART1_IRQn, 5, 5);
   /* USER CODE END USART1_Init 0 */
 
   /* USER CODE BEGIN USART1_Init 1 */
