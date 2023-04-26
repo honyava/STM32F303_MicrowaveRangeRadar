@@ -13,7 +13,7 @@ clear;
 START = 1; STOP = 2; RESET = 3; TEST = 4; RAMP1 = 5; RAMP2 = 6; AMPL = 7;
 %SendDeviation(500e3, RAMP1, s); %deviation - kHz (in function 500e3 = 500MHz)
 %SendCommand(command, s) %only for STOP_RESET_TEST_RAMP1_RAMP2
-period_Number = 1;  % max period_Number = 14
+period_Number = 1;  % max period_Number = 10
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 

@@ -249,7 +249,7 @@ void DMA1_Channel1_IRQHandler(void) // for ADC1_2 (dual)
 		SET_BIT(DMA1->IFCR, DMA_IFCR_CHTIF1_Msk); // Resetting the flag of interrupt
 		if ((flag_dac == 1) && (flag_dac_count <= period_number_DAC))
 		{
-			for(uint16_t i = 0; i < SIZE_BUFFER_ADC/2; i++)
+			for(uint32_t i = 0; i < SIZE_BUFFER_ADC/2; i++)
 			{
 				message_ADC12.BUFF[i + (SIZE_BUFFER_ADC*flag_dma_complete)] = BUFF_ADC1_2[i];
 			}
@@ -262,12 +262,12 @@ void DMA1_Channel1_IRQHandler(void) // for ADC1_2 (dual)
 		SET_BIT(DMA1->IFCR, DMA_IFCR_CTCIF1_Msk); // Resetting the flag of interrupt
 		if ((flag_dac == 1) && (flag_dac_count <= period_number_DAC))
 		{		
-			for(uint16_t i = SIZE_BUFFER_ADC/2; i < SIZE_BUFFER_ADC; i++)
+			for(uint32_t i = SIZE_BUFFER_ADC/2; i < SIZE_BUFFER_ADC; i++)
 			{
 				message_ADC12.BUFF[i + (SIZE_BUFFER_ADC*flag_dma_complete)] = BUFF_ADC1_2[i];
 			}
 			flag_dma_complete++;
-			HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+//			HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
 		}
 	}
 }
@@ -284,10 +284,10 @@ void DMA2_Channel3_IRQHandler(void) // for DAC1
 			flag_dac_count++;
       if(flag_dac_count > period_number_DAC)
       {
+        CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 disable
         flag_trans = 1;
         flag_dac = 0;
         //flag_dac_count = 0;
-        CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 disable
       }        
 		}
 		else
@@ -320,10 +320,8 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 	if(huart == &huart1)
 	{
 		flag_tx = 0;
-		flag_dma_complete = 0;
-		flag_trans = 0;
-		//flag_dac = 0;
-		//flag_dac_count = 0;
+//		flag_dma_complete = 0;
+//		flag_trans = 0;
 	}     
 }
 

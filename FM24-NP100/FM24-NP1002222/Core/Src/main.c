@@ -88,11 +88,10 @@ volatile uint32_t flag_tx = 0;
 volatile uint32_t flag_rx = 0;
 volatile uint32_t flag_trans = 0;
 volatile uint16_t UART_command_convert = 0;
-volatile uint8_t period_number_DAC = 10;
-
-//int test_vec = 0;
+volatile uint8_t period_number_DAC = 0;
 	
-uint8_t start_byte = 0x01;	
+const uint8_t start_byte = 0x01;	
+
 volatile uint8_t period_number = 0;
 volatile uint16_t message_size = 0;	
 volatile uint32_t* address = 0;
@@ -100,7 +99,7 @@ volatile uint32_t* address = 0;
 uint8_t UART_command[SIZE_UART_RX];
 volatile uint8_t firstByteWait = 0;
 volatile uint16_t k_ramp = 0;
-volatile uint16_t Ampl = 4095;
+volatile uint16_t Ampl = 500;
 
 struct message_ADC message_ADC12 = {0};
 
@@ -194,10 +193,9 @@ int main(void)
 					message_ADC12.preamble = (start_byte) | (period_number << 8) | (message_size << 16);
 					flag_dma_complete = 0;
 					flag_trans = 0;
+          flag_dac_count = 0;
 					flag_tx = 1;
 					HAL_UART_Transmit_IT(&huart1, (uint8_t*)&message_ADC12,  message_size + 4);
-					flag_dac_count = 0;
-
 //					CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 disable
 				}
 			}
@@ -246,7 +244,7 @@ int main(void)
 		{
 			HAL_Delay(100);
 			Ampl = (UART_command[2]) + (UART_command[3] << 8);
-//      if (Ampl > 1000) Ampl = 1000;
+//      if (Ampl > 500) Ampl = 500;
 			UART_command[0] = UART_command[1]; // make TEST 1 time
 			UART_command[2] = 0;
 			UART_command[3] = 0;
