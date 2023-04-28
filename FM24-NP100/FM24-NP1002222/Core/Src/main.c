@@ -190,7 +190,8 @@ int main(void)
 					flag_adc = 0;
 					UART_command[0] = 0;
 					UART_command[1] = 0;
-					period_number = flag_dac_count - 1;
+//					period_number = flag_dac_count - 1;
+          period_number = flag_dac_count;
 					message_size = SIZE_BUFFER_ADC*flag_dma_complete*4; //bytes
 	
 					message_ADC12.preamble = (start_byte) | (period_number << 8) | (message_size << 16);
