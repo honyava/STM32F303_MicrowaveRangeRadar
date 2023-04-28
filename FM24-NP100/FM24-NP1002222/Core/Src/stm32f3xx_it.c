@@ -65,6 +65,7 @@ extern volatile uint32_t flag_dac;
 extern volatile uint32_t flag_dac_count;
 extern volatile uint8_t period_number_DAC;
 extern volatile uint32_t flag_trans;
+extern volatile uint32_t flag_adc;
 extern volatile uint32_t BUFF_ADC1_2[SIZE_BUFFER_ADC];
 extern uint8_t UART_command[SIZE_UART_RX];
 extern volatile uint8_t firstByteWait;
@@ -277,6 +278,11 @@ void DMA2_Channel3_IRQHandler(void) // for DAC1
 	if(READ_BIT(DMA2->ISR, DMA_ISR_TCIF3)) // transfer complete
 	{
 		SET_BIT(DMA2->IFCR, DMA_IFCR_CGIF3_Msk);
+		if (flag_adc == 1) 
+		{	
+			SET_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 enable
+			flag_adc = 0;
+		}
 		//SET_BIT(DMA2->IFCR, DMA_IFCR_CTCIF3_Msk); // Resetting the flag of interrupt
 		if (READ_BIT(TIM8->CR1, TIM_CR1_CEN_Msk))
 		{  
@@ -284,7 +290,7 @@ void DMA2_Channel3_IRQHandler(void) // for DAC1
 			flag_dac_count++;
       if(flag_dac_count > period_number_DAC)
       {
-        CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 disable
+//        CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 disable
         flag_trans = 1;
         flag_dac = 0;
         //flag_dac_count = 0;
@@ -333,6 +339,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		{	
 			flag_rx = 1;
 			firstByteWait = 0;
+			if (UART_command[0] == 1) flag_adc = 1;
 			HAL_UART_Receive_IT(&huart1, UART_command + 1, SIZE_UART_RX - 1);
 		}
 	}
