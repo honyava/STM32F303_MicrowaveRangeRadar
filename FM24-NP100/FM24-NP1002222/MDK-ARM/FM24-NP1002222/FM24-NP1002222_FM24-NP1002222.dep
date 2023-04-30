@@ -2,7 +2,7 @@ Dependencies for Project 'FM24-NP1002222', Target 'FM24-NP1002222': (DO NOT MODI
 CompilerVersion: 5060960::V5.06 update 7 (build 960)::.\ARMCC
 F (startup_stm32f303xc.s)(0x644966A3)(--cpu Cortex-M4.fp.sp -g --apcs=interwork -I.\RTE\_FM24-NP1002222-IC:\Users\retin\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-IC:\Users\retin\AppData\Local\Arm\Packs\Keil\STM32F3xx_DFP\2.2.2\Drivers\CMSIS\Device\ST\STM32F3xx\Include--pd "__UVISION_VERSION SETA 536" --pd "_RTE_ SETA 1" --pd "STM32F303xC SETA 1" --pd "_RTE_ SETA 1"--list startup_stm32f303xc.lst --xref -o fm24-np1002222\startup_stm32f303xc.o --depend fm24-np1002222\startup_stm32f303xc.d)
 F (.\CMSIS_my.c)(0x644966A3)(--c99 -c --cpu Cortex-M4.fp.sp -g -O1 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F3xx_HAL_Driver/Inc -I ../Drivers/STM32F3xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F3xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_FM24-NP1002222-IC:\Users\retin\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-IC:\Users\retin\AppData\Local\Arm\Packs\Keil\STM32F3xx_DFP\2.2.2\Drivers\CMSIS\Device\ST\STM32F3xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F303xC -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F303xC-o fm24-np1002222\cmsis_my.o --omf_browse fm24-np1002222\cmsis_my.crf --depend fm24-np1002222\cmsis_my.d)
-I (../Core/Inc/main.h)(0x644BC9EA)
+I (../Core/Inc/main.h)(0x644E6AC2)
 I (../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal.h)(0x64141CDC)
 I (../Core/Inc/stm32f3xx_hal_conf.h)(0x64141CDB)
 I (../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_rcc.h)(0x64141CDC)
@@ -36,8 +36,8 @@ I (../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_pwr_ex.h)(0x64141CDC)
 I (../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_uart.h)(0x64141CDC)
 I (../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_uart_ex.h)(0x64141CDC)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x602569CE)
-F (../Core/Src/main.c)(0x644BCF09)(--c99 -c --cpu Cortex-M4.fp.sp -g -O1 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F3xx_HAL_Driver/Inc -I ../Drivers/STM32F3xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F3xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_FM24-NP1002222-IC:\Users\retin\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-IC:\Users\retin\AppData\Local\Arm\Packs\Keil\STM32F3xx_DFP\2.2.2\Drivers\CMSIS\Device\ST\STM32F3xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F303xC -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F303xC-o fm24-np1002222\main.o --omf_browse fm24-np1002222\main.crf --depend fm24-np1002222\main.d)
-I (../Core/Inc/main.h)(0x644BC9EA)
+F (../Core/Src/main.c)(0x644E7297)(--c99 -c --cpu Cortex-M4.fp.sp -g -O1 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F3xx_HAL_Driver/Inc -I ../Drivers/STM32F3xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F3xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_FM24-NP1002222-IC:\Users\retin\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-IC:\Users\retin\AppData\Local\Arm\Packs\Keil\STM32F3xx_DFP\2.2.2\Drivers\CMSIS\Device\ST\STM32F3xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F303xC -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F303xC-o fm24-np1002222\main.o --omf_browse fm24-np1002222\main.crf --depend fm24-np1002222\main.d)
+I (../Core/Inc/main.h)(0x644E6AC2)
 I (../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal.h)(0x64141CDC)
 I (../Core/Inc/stm32f3xx_hal_conf.h)(0x64141CDB)
 I (../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_rcc.h)(0x64141CDC)
@@ -72,8 +72,8 @@ I (../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_uart.h)(0x64141CDC)
 I (../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_uart_ex.h)(0x64141CDC)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x602569CE)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x602569C8)
-F (../Core/Src/stm32f3xx_it.c)(0x644BC9EA)(--c99 -c --cpu Cortex-M4.fp.sp -g -O1 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F3xx_HAL_Driver/Inc -I ../Drivers/STM32F3xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F3xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_FM24-NP1002222-IC:\Users\retin\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-IC:\Users\retin\AppData\Local\Arm\Packs\Keil\STM32F3xx_DFP\2.2.2\Drivers\CMSIS\Device\ST\STM32F3xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F303xC -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F303xC-o fm24-np1002222\stm32f3xx_it.o --omf_browse fm24-np1002222\stm32f3xx_it.crf --depend fm24-np1002222\stm32f3xx_it.d)
-I (../Core/Inc/main.h)(0x644BC9EA)
+F (../Core/Src/stm32f3xx_it.c)(0x644E7297)(--c99 -c --cpu Cortex-M4.fp.sp -g -O1 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F3xx_HAL_Driver/Inc -I ../Drivers/STM32F3xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F3xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_FM24-NP1002222-IC:\Users\retin\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-IC:\Users\retin\AppData\Local\Arm\Packs\Keil\STM32F3xx_DFP\2.2.2\Drivers\CMSIS\Device\ST\STM32F3xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F303xC -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F303xC-o fm24-np1002222\stm32f3xx_it.o --omf_browse fm24-np1002222\stm32f3xx_it.crf --depend fm24-np1002222\stm32f3xx_it.d)
+I (../Core/Inc/main.h)(0x644E6AC2)
 I (../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal.h)(0x64141CDC)
 I (../Core/Inc/stm32f3xx_hal_conf.h)(0x64141CDB)
 I (../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_rcc.h)(0x64141CDC)
@@ -109,7 +109,7 @@ I (../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_uart_ex.h)(0x64141CDC)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x602569CE)
 I (../Core/Inc/stm32f3xx_it.h)(0x64141CDB)
 F (../Core/Src/stm32f3xx_hal_msp.c)(0x64141CDB)(--c99 -c --cpu Cortex-M4.fp.sp -g -O1 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F3xx_HAL_Driver/Inc -I ../Drivers/STM32F3xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F3xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_FM24-NP1002222-IC:\Users\retin\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-IC:\Users\retin\AppData\Local\Arm\Packs\Keil\STM32F3xx_DFP\2.2.2\Drivers\CMSIS\Device\ST\STM32F3xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F303xC -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F303xC-o fm24-np1002222\stm32f3xx_hal_msp.o --omf_browse fm24-np1002222\stm32f3xx_hal_msp.crf --depend fm24-np1002222\stm32f3xx_hal_msp.d)
-I (../Core/Inc/main.h)(0x644BC9EA)
+I (../Core/Inc/main.h)(0x644E6AC2)
 I (../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal.h)(0x64141CDC)
 I (../Core/Inc/stm32f3xx_hal_conf.h)(0x64141CDB)
 I (../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_rcc.h)(0x64141CDC)
