@@ -63,6 +63,7 @@ extern volatile uint8_t flag_tx;
 extern volatile uint8_t flag_rx;
 extern volatile uint32_t flag_dac;
 extern volatile uint32_t flag_dac_count;
+extern volatile uint32_t flag_dac_complete;
 extern volatile uint8_t period_number_DAC;
 extern volatile uint32_t flag_trans;
 extern volatile uint32_t flag_adc;
@@ -255,7 +256,7 @@ void DMA1_Channel1_IRQHandler(void) // for ADC1_2 (dual)
 			message_ADC12.BUFF[i + temp_size] = BUFF_ADC1_2[i];
 		}
 		flag_dma_complete++;
-		flag_dma_complete > 40 ? 0 : flag_dma_complete;
+//		flag_dma_complete > 40 ? 0 : flag_dma_complete;
 //			HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
 
 	}
@@ -266,6 +267,7 @@ void DMA2_Channel3_IRQHandler(void) // for DAC1
 	if(READ_BIT(DMA2->ISR, DMA_ISR_TCIF3)) // transfer complete
 	{
 		SET_BIT(DMA2->IFCR, DMA_IFCR_CGIF3_Msk);
+
 		if (flag_adc == 1 && flag_tx == 0) 
 		{	
 			SET_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 enable
@@ -283,19 +285,21 @@ void DMA2_Channel3_IRQHandler(void) // for DAC1
       {
         CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 disable
 				CLEAR_BIT(DMA1_Channel1->CCR, DMA_CCR_EN); // DMA1_Channel1
-				while ((TIM8->CR1 & TIM_CR1_CEN_Msk) != 0);
-				while ((DMA1_Channel1->CCR & DMA_CCR_EN) != 0);				
+				while ((TIM8->CR1 & TIM_CR1_CEN_Msk) != 0)
+				{}
+				while ((DMA1_Channel1->CCR & DMA_CCR_EN) != 0)
+				{}					
         flag_trans = 1;
         flag_dac = 0;
         //flag_dac_count = 0;
       }        
 		}
-		else
-		{
-			flag_dac = 0;
-			flag_dac_count = 0;
-			//flag_dma_complete = 0;
-		}
+//		else
+//		{
+//			flag_dac = 0;
+//			flag_dac_count = 0;
+//			//flag_dma_complete = 0;
+//		}
 	}
 }
 
@@ -327,7 +331,7 @@ void TIM3_IRQHandler(void) // for RX_USART
 		else 
 		{
 			timeOut++;
-			if(timeOut >= 100) //wait 10 ms
+			if(timeOut >= 100) //wait 2 ms
 			{
 				HAL_UART_AbortReceive_IT(&huart1);
 				firstByteWait = 1; 

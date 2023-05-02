@@ -87,6 +87,7 @@ volatile uint32_t flag_tx = 0;
 volatile uint32_t flag_rx = 0;
 volatile uint32_t flag_trans = 0;
 volatile uint32_t flag_adc = 0;
+volatile uint32_t flag_dac_compete = 0;
 volatile uint8_t period_number_DAC = 0;
 	
 const uint8_t start_byte = 0x01;	
