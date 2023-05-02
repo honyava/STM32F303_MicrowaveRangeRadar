@@ -72,6 +72,8 @@ void TIM8_UP_IRQHandler(void);
 void TIM8_Init(void);
 void TIM2_IRQHandler(void);
 void TIM2_Init(void);
+void TIM3_Init(void);
+void TIM3_IRQHandler(void);
 void DAC1_Init(void);
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart);
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);

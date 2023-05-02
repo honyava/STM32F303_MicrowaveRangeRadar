@@ -121,6 +121,25 @@ void TIM2_Init(void)
 	NVIC_EnableIRQ(TIM2_IRQn);
 	
 }
+
+void TIM3_Init(void)
+{
+	SET_BIT(RCC->APB1ENR, RCC_APB1ENR_TIM3EN); //clock to TIM2 72MHz
+	TIM3->SMCR &= ~ TIM_SMCR_SMS; 
+	CLEAR_REG(TIM3->CR1);
+	TIM3->PSC = 1-1;
+	TIM3->ARR = 36000-1; //144 kHz TIM2 then for DAC 144 kHz  144/128 = 1.125kHz
+	TIM3->DIER |= TIM_DIER_UIE; //interrupt on
+	TIM3->CR1 &= ~TIM_CR1_DIR_Msk; // straight count
+	MODIFY_REG(TIM3->CR2, TIM_CR2_MMS, 2 << TIM_CR2_MMS_Pos); // Update Event for DAC1
+	SET_BIT(TIM3->CR1, TIM_CR1_CEN_Msk); // TIM2 enable
+	NVIC_SetPriority(TIM3_IRQn,4);	
+	NVIC_EnableIRQ(TIM3_IRQn);
+	
+}
+
+
+
 // Function to send an array of data via UART
 //void send_data_via_uart(uint8_t* data, uint16_t length)
 //{

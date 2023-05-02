@@ -168,6 +168,7 @@ int main(void)
 	DAC1_Init();
 	TIM2_Init();
 	TIM8_Init();
+	TIM3_Init();
 	
 	firstByteWait = 1;
 	HAL_UART_Receive_IT(&huart1, UART_command, 1);
@@ -182,11 +183,12 @@ int main(void)
 		{
 			period_number_DAC = UART_command[1];
 //			SET_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 enable
-			if (flag_tx == 0)
-			{
+//			if (flag_tx == 0)
+//			{
 				if (flag_trans == 1) // to do
 				{
-					CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 disable
+//					CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 disable
+
 					flag_adc = 0;
 					UART_command[0] = 0;
 					UART_command[1] = 0;
@@ -198,12 +200,11 @@ int main(void)
 					flag_trans = 0;
           flag_dac_count = 0;
 					flag_tx = 1;
-					
 					HAL_UART_Transmit_IT(&huart1, (uint8_t*)&message_ADC12,  message_size + 4);
 
 //					CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 disable
 				}
-			}
+//			}
 		}
 		else if(UART_command[0] == STOP)
 		{
@@ -247,7 +248,7 @@ int main(void)
 		}
 		else if(UART_command[0] == AMPL)   //strncmp ((char*)UART_command, AMPL_TX, 2)
 		{
-			HAL_Delay(100);
+			HAL_Delay(10);
 			Ampl = (UART_command[2]) + (UART_command[3] << 8);
 //      if (Ampl > 500) Ampl = 500;
 			UART_command[0] = UART_command[1]; // make TEST 1 time
