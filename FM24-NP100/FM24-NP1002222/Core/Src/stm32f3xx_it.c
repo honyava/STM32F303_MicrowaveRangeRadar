@@ -232,7 +232,7 @@ void USART1_IRQHandler(void)
 /* USER CODE BEGIN 1 */
 void DMA1_Channel1_IRQHandler(void) // for ADC1_2 (dual)
 {
-	temp_size = SIZE_BUFFER_ADC*flag_dma_complete;
+	temp_size = SIZE_BUFFER_ADC*(flag_dma_complete);
 	if(READ_BIT(DMA1->ISR, DMA_ISR_HTIF1)) // half transfer complete
 	{
 		DMA1->IFCR |= DMA_IFCR_CGIF1;
@@ -299,13 +299,13 @@ void DMA2_Channel3_IRQHandler(void) // for DAC1
 	}
 }
 
-void TIM8_UP_IRQHandler(void) // for ADC1_2 (dual)
-{
-	if(READ_BIT(TIM8->SR, TIM_SR_UIF)) // check the flag of interrupt
-	{
-		TIM8->SR &= ~TIM_SR_UIF; // Resetting the flag of interrupt
-	}
-}
+//void TIM8_UP_IRQHandler(void) // for ADC1_2 (dual)
+//{
+//	if(READ_BIT(TIM8->SR, TIM_SR_UIF)) // check the flag of interrupt
+//	{
+//		TIM8->SR &= ~TIM_SR_UIF; // Resetting the flag of interrupt
+//	}
+//}
 
 //void TIM2_IRQHandler(void) // for DAC1
 //{
@@ -343,8 +343,9 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 	if(huart == &huart1)
 	{
 		flag_tx = 0;
+		HAL_UART_Receive_IT(&huart1, UART_command, 1);
 		temp_size = 0;
-		memset(message_ADC12.BUFF, 0, sizeof(message_ADC12.BUFF));
+//		memset(message_ADC12.BUFF, 0, sizeof(message_ADC12.BUFF));
 		
 //		flag_dma_complete = 0;
 //		flag_trans = 0;

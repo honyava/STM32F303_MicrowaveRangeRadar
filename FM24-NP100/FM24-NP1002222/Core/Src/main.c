@@ -80,7 +80,6 @@ const uint16_t Triangle_DAC[128] = {0,	64,	128,	192,	256,	320,	384,	448,	512,	57
 uint16_t Triangle_DAC3[128] = {0,};
 	
 volatile uint32_t BUFF_ADC1_2[SIZE_BUFFER_ADC] = {0,};
-//uint8_t flag_dma_half = 0;
 volatile uint32_t flag_dma_complete = 0;
 volatile uint32_t flag_dac = 0;	
 volatile uint32_t flag_dac_count = 0;	
@@ -88,14 +87,12 @@ volatile uint32_t flag_tx = 0;
 volatile uint32_t flag_rx = 0;
 volatile uint32_t flag_trans = 0;
 volatile uint32_t flag_adc = 0;
-volatile uint16_t UART_command_convert = 0;
 volatile uint8_t period_number_DAC = 0;
 	
 const uint8_t start_byte = 0x01;	
 
 volatile uint8_t period_number = 0;
 volatile uint16_t message_size = 0;	
-volatile uint32_t* address = 0;
 	
 uint8_t UART_command[SIZE_UART_RX];
 volatile uint8_t firstByteWait = 0;
@@ -181,6 +178,7 @@ int main(void)
 		//UART_command_convert = UART_command[0] + (UART_command[1] << 8);
 		if ((UART_command[0] == START) && (UART_command[1] != 0))  //&& (UART_command[1] <= 14)
 		{
+			HAL_UART_AbortReceive_IT(&huart1);
 			period_number_DAC = UART_command[1];
 			if (flag_trans == 1) // to do
 			{
@@ -432,7 +430,7 @@ static void MX_USART1_UART_Init(void)
 {
 
   /* USER CODE BEGIN USART1_Init 0 */
-	HAL_NVIC_SetPriority(USART1_IRQn, 5, 5);
+	HAL_NVIC_SetPriority(USART1_IRQn, 2, 2);
   /* USER CODE END USART1_Init 0 */
 
   /* USER CODE BEGIN USART1_Init 1 */

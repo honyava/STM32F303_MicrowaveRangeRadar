@@ -58,7 +58,7 @@ void ADC1_2_Dual_Init(void)
 	DMA1_Channel1->CCR |= (2 << DMA_CCR_MSIZE_Pos); //memmory data size 32b (word)
 	DMA1_Channel1->CNDTR |= (SIZE_BUFFER_ADC << DMA_CNDTR_NDT_Pos);
 	SET_BIT(DMA1_Channel1->CCR, DMA_CCR_EN); // Enable DMA
-	NVIC_SetPriority(DMA1_Channel1_IRQn,2);
+	NVIC_SetPriority(DMA1_Channel1_IRQn,1);
 	NVIC_EnableIRQ(DMA1_Channel1_IRQn);
 	/////
 }
@@ -74,8 +74,8 @@ void TIM8_Init(void)
 	TIM8->CR1 &= ~TIM_CR1_DIR_Msk; // straight count
 	MODIFY_REG(TIM8->CR2, TIM_CR2_MMS, 2 << TIM_CR2_MMS_Pos); // Update Event for ADC1
 //	SET_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 enable
-	NVIC_SetPriority(TIM8_UP_IRQn,3);
-	NVIC_EnableIRQ(TIM8_UP_IRQn);
+//	NVIC_SetPriority(TIM8_UP_IRQn,3);
+//	NVIC_EnableIRQ(TIM8_UP_IRQn);
 }
 
 void DAC1_Init(void) // for T2 TSEL = 100     // DMA2 Channel 3
