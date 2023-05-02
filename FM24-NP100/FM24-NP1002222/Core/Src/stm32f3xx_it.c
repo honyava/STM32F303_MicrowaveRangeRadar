@@ -73,6 +73,7 @@ extern volatile uint8_t firstByteWait;
 extern struct message_ADC message_ADC12;
 
 uint16_t timeOut = 0;
+uint32_t temp_size = 0;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -202,21 +203,7 @@ void SysTick_Handler(void)
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
-//	if(firstByteWait != 0)
-//	{
-//		timeOut = 0; 
-//	}
-//  else 
-//	{
-//    timeOut++;
-//    if(timeOut >= 25)
-//		{
-//      HAL_UART_AbortReceive_IT(&huart1);
-//      firstByteWait = 1; 
-//      timeOut = 0;
-//      HAL_UART_Receive_IT(&huart1, UART_command, 1);
-//    }
-//  }
+
   /* USER CODE END SysTick_IRQn 1 */
 }
 
@@ -245,31 +232,32 @@ void USART1_IRQHandler(void)
 /* USER CODE BEGIN 1 */
 void DMA1_Channel1_IRQHandler(void) // for ADC1_2 (dual)
 {
+	temp_size = SIZE_BUFFER_ADC*flag_dma_complete;
 	if(READ_BIT(DMA1->ISR, DMA_ISR_HTIF1)) // half transfer complete
 	{
 		DMA1->IFCR |= DMA_IFCR_CGIF1;
+		
 //		SET_BIT(DMA1->IFCR, DMA_IFCR_CHTIF1_Msk); // Resetting the flag of interrupt
-		if ((flag_dac == 1) && (flag_dac_count <= period_number_DAC))
+
+		for(uint32_t i = 0; i < SIZE_BUFFER_ADC/2; i++)
 		{
-			for(uint32_t i = 0; i < SIZE_BUFFER_ADC/2; i++)
-			{
-				message_ADC12.BUFF[i + (SIZE_BUFFER_ADC*flag_dma_complete)] = BUFF_ADC1_2[i];
-			}
+			message_ADC12.BUFF[i + temp_size] = BUFF_ADC1_2[i];
 		}
+
 	}	
-	if(READ_BIT(DMA1->ISR, DMA_ISR_TCIF1)) // transfer complete
+	else if(READ_BIT(DMA1->ISR, DMA_ISR_TCIF1)) // transfer complete
 	{
 		DMA1->IFCR |= DMA_IFCR_CGIF1;
 //		SET_BIT(DMA1->IFCR, DMA_IFCR_CTCIF1_Msk); // Resetting the flag of interrupt
-		if ((flag_dac == 1) && (flag_dac_count <= period_number_DAC))
-		{		
-			for(uint32_t i = SIZE_BUFFER_ADC/2; i < SIZE_BUFFER_ADC; i++)
-			{
-				message_ADC12.BUFF[i + (SIZE_BUFFER_ADC*flag_dma_complete)] = BUFF_ADC1_2[i];
-			}
-			flag_dma_complete++;
-//			HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+	
+		for(uint32_t i = SIZE_BUFFER_ADC/2; i < SIZE_BUFFER_ADC; i++)
+		{
+			message_ADC12.BUFF[i + temp_size] = BUFF_ADC1_2[i];
 		}
+		flag_dma_complete++;
+		flag_dma_complete > 40 ? 0 : flag_dma_complete;
+//			HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+
 	}
 }
 
@@ -281,16 +269,22 @@ void DMA2_Channel3_IRQHandler(void) // for DAC1
 		if (flag_adc == 1 && flag_tx == 0) 
 		{	
 			SET_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 enable
+			SET_BIT(DMA1_Channel1->CCR, DMA_CCR_EN);
+			while ((TIM8->CR1 & TIM_CR1_CEN_Msk) == 0);
+			while ((DMA1_Channel1->CCR & DMA_CCR_EN) == 0);
 			flag_adc = 0;
 		}
 		//SET_BIT(DMA2->IFCR, DMA_IFCR_CTCIF3_Msk); // Resetting the flag of interrupt
-		else if (READ_BIT(TIM8->CR1, TIM_CR1_CEN_Msk))
+		if (READ_BIT(TIM8->CR1, TIM_CR1_CEN_Msk))
 		{  
 			flag_dac = 1;
 			flag_dac_count++;
-      if(flag_dac_count > period_number_DAC)
+      if(flag_dac_count == period_number_DAC + 1)
       {
         CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 disable
+				CLEAR_BIT(DMA1_Channel1->CCR, DMA_CCR_EN); // DMA1_Channel1
+				while ((TIM8->CR1 & TIM_CR1_CEN_Msk) != 0);
+				while ((DMA1_Channel1->CCR & DMA_CCR_EN) != 0);				
         flag_trans = 1;
         flag_dac = 0;
         //flag_dac_count = 0;
@@ -313,13 +307,13 @@ void TIM8_UP_IRQHandler(void) // for ADC1_2 (dual)
 	}
 }
 
-void TIM2_IRQHandler(void) // for DAC1
-{
-	if(READ_BIT(TIM2->SR, TIM_SR_UIF)) // check the flag of interrupt
-	{
-		TIM2->SR &= ~TIM_SR_UIF; // Resetting the flag of interrupt
-	}
-}
+//void TIM2_IRQHandler(void) // for DAC1
+//{
+//	if(READ_BIT(TIM2->SR, TIM_SR_UIF)) // check the flag of interrupt
+//	{
+//		TIM2->SR &= ~TIM_SR_UIF; // Resetting the flag of interrupt
+//	}
+//}
 
 void TIM3_IRQHandler(void) // for RX_USART
 {
@@ -333,7 +327,7 @@ void TIM3_IRQHandler(void) // for RX_USART
 		else 
 		{
 			timeOut++;
-			if(timeOut >= 25)
+			if(timeOut >= 100) //wait 10 ms
 			{
 				HAL_UART_AbortReceive_IT(&huart1);
 				firstByteWait = 1; 
@@ -349,7 +343,9 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 	if(huart == &huart1)
 	{
 		flag_tx = 0;
+		temp_size = 0;
 		memset(message_ADC12.BUFF, 0, sizeof(message_ADC12.BUFF));
+		
 //		flag_dma_complete = 0;
 //		flag_trans = 0;
 	}     
@@ -361,7 +357,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	{
 		if (firstByteWait != 0)
 		{	
-			flag_rx = 1;
+//			flag_rx = 1;
 			firstByteWait = 0;
 //			if (UART_command[0] == 1) SET_BIT(TIM8->CR1, TIM_CR1_CEN_Msk);
 			if (UART_command[0] == 1) flag_adc = 1;

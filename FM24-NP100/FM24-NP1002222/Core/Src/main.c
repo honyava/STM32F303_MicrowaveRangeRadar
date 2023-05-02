@@ -182,29 +182,21 @@ int main(void)
 		if ((UART_command[0] == START) && (UART_command[1] != 0))  //&& (UART_command[1] <= 14)
 		{
 			period_number_DAC = UART_command[1];
-//			SET_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 enable
-//			if (flag_tx == 0)
-//			{
-				if (flag_trans == 1) // to do
-				{
-//					CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 disable
+			if (flag_trans == 1) // to do
+			{
+				flag_adc = 0;
+				UART_command[0] = 0;
+				UART_command[1] = 0;
+				period_number = flag_dac_count - 1;
+				message_size = SIZE_BUFFER_ADC*flag_dma_complete*4; //bytes
 
-					flag_adc = 0;
-					UART_command[0] = 0;
-					UART_command[1] = 0;
-					period_number = flag_dac_count - 1;
-					message_size = SIZE_BUFFER_ADC*flag_dma_complete*4; //bytes
-	
-					message_ADC12.preamble = (start_byte) | (period_number << 8) | (message_size << 16);
-					flag_dma_complete = 0;
-					flag_trans = 0;
-          flag_dac_count = 0;
-					flag_tx = 1;
-					HAL_UART_Transmit_IT(&huart1, (uint8_t*)&message_ADC12,  message_size + 4);
-
-//					CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 disable
-				}
-//			}
+				message_ADC12.preamble = (start_byte) | (period_number << 8) | (message_size << 16);
+				flag_dma_complete = 0;
+				flag_trans = 0;
+				flag_dac_count = 0;
+				flag_tx = 1;
+				HAL_UART_Transmit_IT(&huart1, (uint8_t*)&message_ADC12,  message_size + 4);
+			}
 		}
 		else if(UART_command[0] == STOP)
 		{

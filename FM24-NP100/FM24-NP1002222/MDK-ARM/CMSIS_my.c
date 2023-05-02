@@ -117,18 +117,18 @@ void TIM2_Init(void)
 	TIM2->CR1 &= ~TIM_CR1_DIR_Msk; // straight count
 	MODIFY_REG(TIM2->CR2, TIM_CR2_MMS, 2 << TIM_CR2_MMS_Pos); // Update Event for DAC1
 	SET_BIT(TIM2->CR1, TIM_CR1_CEN_Msk); // TIM2 enable
-	NVIC_SetPriority(TIM2_IRQn,1);	
-	NVIC_EnableIRQ(TIM2_IRQn);
+//	NVIC_SetPriority(TIM2_IRQn,1);	
+//	NVIC_EnableIRQ(TIM2_IRQn);
 	
 }
 
 void TIM3_Init(void)
 {
-	SET_BIT(RCC->APB1ENR, RCC_APB1ENR_TIM3EN); //clock to TIM2 72MHz
+	SET_BIT(RCC->APB1ENR, RCC_APB1ENR_TIM3EN); //clock to TIM3 72MHz
 	TIM3->SMCR &= ~ TIM_SMCR_SMS; 
 	CLEAR_REG(TIM3->CR1);
 	TIM3->PSC = 1-1;
-	TIM3->ARR = 36000-1; //144 kHz TIM2 then for DAC 144 kHz  144/128 = 1.125kHz
+	TIM3->ARR = 7200-1; //10 kHz TIM3 
 	TIM3->DIER |= TIM_DIER_UIE; //interrupt on
 	TIM3->CR1 &= ~TIM_CR1_DIR_Msk; // straight count
 	MODIFY_REG(TIM3->CR2, TIM_CR2_MMS, 2 << TIM_CR2_MMS_Pos); // Update Event for DAC1
@@ -139,22 +139,3 @@ void TIM3_Init(void)
 }
 
 
-
-// Function to send an array of data via UART
-//void send_data_via_uart(uint8_t* data, uint16_t length)
-//{
-//  // Enable interrupt on transmission completion
-//  USART1->CR1 |= USART_CR1_TCIE;
-
-//  // Send data
-//  for (uint16_t i = 0; i < length; i++)
-//  {
-//    while (!(USART1->ISR & USART_ISR_TXE)); // Wait for the transmission buffer to be empty
-//    USART1->TDR = data[i]; // Write data to the data register
-//  }
-//  
-//  while (!(USART1->ISR & USART_ISR_TC)); // Wait for the transmission to complete
-
-//  // Disable interrupt on transmission completion
-//  USART1->CR1 &= ~USART_CR1_TCIE;
-//}
