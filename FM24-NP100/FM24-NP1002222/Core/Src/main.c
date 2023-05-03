@@ -176,17 +176,30 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+//		HAL_UART_Transmit_IT(&huart1, (uint8_t*)"TEST", 4);
+//		HAL_Delay(50);
 		//UART_command_convert = UART_command[0] + (UART_command[1] << 8);
+		if (flag_rx == 1)
+		{
+			HAL_Delay(1);
+			flag_rx = 0;
+			flag_adc_start = 1;
+			period_number_DAC = UART_command[1];
+			SET_BIT(DMA2_Channel3->CCR, DMA_CCR_EN);
+			while ((DMA2_Channel3->CCR & DMA_CCR_EN) == 0);			
+			SET_BIT(TIM2->CR1, TIM_CR1_CEN_Msk); // TIM2 enable
+			while ((TIM2->CR1 & TIM_CR1_CEN_Msk) == 0);
+		}
 		if ((UART_command[0] == START) && (UART_command[1] != 0))  //&& (UART_command[1] <= 14)
 		{
-			period_number_DAC = UART_command[1];
-			if (flag_trans == 1) // to do
+			
+			if (flag_trans == 1) 
 			{
 				HAL_UART_AbortReceive_IT(&huart1);
 				flag_adc_start = 0;
 				UART_command[0] = 0;
 				UART_command[1] = 0;
-				period_number = flag_dac_count - 1;
+				period_number = period_number_DAC;
 				message_size = SIZE_BUFFER_ADC*flag_dma_complete*4; //bytes
 
 				message_ADC12.preamble = (start_byte) | (period_number << 8) | (message_size << 16);
@@ -194,6 +207,7 @@ int main(void)
 				flag_trans = 0;
 				flag_dac_count = 0;
 				flag_tx = 1;
+				
 				HAL_UART_Transmit_IT(&huart1, (uint8_t*)&message_ADC12,  message_size + 4);
 			}
 		}
@@ -431,7 +445,8 @@ static void MX_USART1_UART_Init(void)
 {
 
   /* USER CODE BEGIN USART1_Init 0 */
-	HAL_NVIC_SetPriority(USART1_IRQn, 2, 2);
+	NVIC_SetPriority(USART1_IRQn,2);
+//	HAL_NVIC_SetPriority(USART1_IRQn, 2, 2);
   /* USER CODE END USART1_Init 0 */
 
   /* USER CODE BEGIN USART1_Init 1 */

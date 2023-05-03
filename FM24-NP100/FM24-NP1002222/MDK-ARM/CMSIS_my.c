@@ -100,7 +100,7 @@ void DAC1_Init(void) // for T2 TSEL = 100     // DMA2 Channel 3
 	DMA2_Channel3->CCR |= (1 << DMA_CCR_PSIZE_Pos); //periphiral data size 16b (half-word)
 	DMA2_Channel3->CCR |= (1 << DMA_CCR_MSIZE_Pos); //memmory data size 16b (half-word)
 	DMA2_Channel3->CNDTR |= (128 << DMA_CNDTR_NDT_Pos);
-	SET_BIT(DMA2_Channel3->CCR, DMA_CCR_EN); // Enable DMA
+//	SET_BIT(DMA2_Channel3->CCR, DMA_CCR_EN); // Enable DMA
 	NVIC_SetPriority(DMA2_Channel3_IRQn,0);
 	NVIC_EnableIRQ(DMA2_Channel3_IRQn);
 	
@@ -116,7 +116,7 @@ void TIM2_Init(void)
 	TIM2->DIER |= TIM_DIER_UIE; //interrupt on
 	TIM2->CR1 &= ~TIM_CR1_DIR_Msk; // straight count
 	MODIFY_REG(TIM2->CR2, TIM_CR2_MMS, 2 << TIM_CR2_MMS_Pos); // Update Event for DAC1
-	SET_BIT(TIM2->CR1, TIM_CR1_CEN_Msk); // TIM2 enable
+//	SET_BIT(TIM2->CR1, TIM_CR1_CEN_Msk); // TIM2 enable
 //	NVIC_SetPriority(TIM2_IRQn,1);	
 //	NVIC_EnableIRQ(TIM2_IRQn);
 	
