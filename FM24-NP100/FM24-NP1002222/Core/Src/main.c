@@ -86,7 +86,7 @@ volatile uint32_t flag_dac_count = 0;
 volatile uint32_t flag_tx = 0;
 volatile uint32_t flag_rx = 0;
 volatile uint32_t flag_trans = 0;
-volatile uint32_t flag_adc = 0;
+volatile uint32_t flag_adc_start = 0;
 volatile uint32_t flag_dac_compete = 0;
 volatile uint8_t period_number_DAC = 0;
 	
@@ -179,11 +179,11 @@ int main(void)
 		//UART_command_convert = UART_command[0] + (UART_command[1] << 8);
 		if ((UART_command[0] == START) && (UART_command[1] != 0))  //&& (UART_command[1] <= 14)
 		{
-			HAL_UART_AbortReceive_IT(&huart1);
 			period_number_DAC = UART_command[1];
 			if (flag_trans == 1) // to do
 			{
-				flag_adc = 0;
+				HAL_UART_AbortReceive_IT(&huart1);
+				flag_adc_start = 0;
 				UART_command[0] = 0;
 				UART_command[1] = 0;
 				period_number = flag_dac_count - 1;
