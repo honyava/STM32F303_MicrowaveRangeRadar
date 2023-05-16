@@ -234,6 +234,7 @@ void USART1_IRQHandler(void)
 void DMA1_Channel1_IRQHandler(void) // for ADC1_2 (dual)
 {
 	temp_size = SIZE_BUFFER_ADC*(flag_dma_complete);
+	
 	if(READ_BIT(DMA1->ISR, DMA_ISR_HTIF1)) // half transfer complete
 	{
 //		DMA1->IFCR |= DMA_IFCR_CGIF1;

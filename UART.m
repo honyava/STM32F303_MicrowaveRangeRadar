@@ -1,6 +1,6 @@
 clear;
 % bytes   [0]          [1]            [2]          [3]
-% START    1    period_Number<=14      -            -    
+% START    1    period_Number_stm32<=14      -            -    
 % STOP     2            -              -            -
 % RESET    3            -              -            -
 % TEST     4            -              -            -
@@ -13,7 +13,11 @@ clear;
 START = 1; STOP = 2; RESET = 3; TEST = 4; RAMP1 = 5; RAMP2 = 6; AMPL = 7;
 %SendDeviation(500e3, RAMP1, s); %deviation - kHz (in function 500e3 = 500MHz)
 %SendCommand(command, s) %only for STOP_RESET_TEST_RAMP1_RAMP2
-period_Number = 1;  % max period_Number = 10
+period_Number_stm32 = 4;  % max period_Number_stm32_stm32 = 4
+period_Number_pc = 5; % can be any number
+
+% on graph will be period_Number_stm32*period_Number_pc PERIODS of signal
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -22,18 +26,18 @@ pause(1);
 count = 0;
 All_Channel_new = [];
 pause(0.5);
-SendDeviation(200e3, RAMP1, s);
+SendDeviation(250e3, RAMP1, s);
 pause(0.5);
 while(true)
     if count < 25000
         flush(s,"input");
         num = uint32(0);
-        SendStart(period_Number, s);
-        size_m = period_Number*128*4 + 1;
+        SendStart(period_Number_stm32, s);
+        size_m = period_Number_stm32*128*4 + 1;
         data = uint32([]); % Создаем пустой массив для данных
 %         data = uint32(read(s, size_m,"uint32"));
         message_size = (size_m - 1)*4; % in bytes
-        preamble = bitshift(uint32(1), 0) + uint32(bitshift(uint32(period_Number), 8)) + uint32(bitshift(uint32(message_size), 16));
+        preamble = bitshift(uint32(1), 0) + uint32(bitshift(uint32(period_Number_stm32), 8)) + uint32(bitshift(uint32(message_size), 16));
 
         while(length(data) < size_m) % Ждем, пока длина данных станет больше или равной 4*128*4
             new_data = uint32(read(s, size_m - length(data), 'uint32'));
@@ -61,7 +65,7 @@ while(true)
         All_Channel = cat(1,Channel1, Channel2);    
         All_Channel_new = cat(2,All_Channel_new, All_Channel);
 
-        if (mod(count, 1) == 0)
+        if (mod(count, period_Number_pc) == 0)
             fs = 576e3; % Частота дискретизации
             t = (0:numel(All_Channel_new(1,:))-1) * 1/fs * 1000; % Преобразование в миллисекунды
         
