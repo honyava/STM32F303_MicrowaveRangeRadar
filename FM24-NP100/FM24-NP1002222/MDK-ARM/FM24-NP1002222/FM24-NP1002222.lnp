@@ -4,6 +4,7 @@
 "fm24-np1002222\main.o"
 "fm24-np1002222\stm32f3xx_it.o"
 "fm24-np1002222\stm32f3xx_hal_msp.o"
+"fm24-np1002222\my_functions.o"
 "fm24-np1002222\stm32f3xx_hal_opamp.o"
 "fm24-np1002222\stm32f3xx_hal_opamp_ex.o"
 "fm24-np1002222\stm32f3xx_hal.o"

@@ -1,8 +1,7 @@
 #include "main.h"
 
 extern volatile uint32_t BUFF_ADC1_2[SIZE_BUFFER_ADC];
-extern const uint16_t Triangle_DAC[128];
-
+extern volatile uint16_t Triangle_DAC[SIZE_BUFFER_DAC];
 	
 void ADC1_2_Dual_Init(void)
 {
@@ -76,16 +75,17 @@ void TIM8_Init(void)
 void DAC1_Init(void) // for T2 TSEL = 100     // DMA2 Channel 3
 {
 	SET_BIT(RCC->APB1ENR,RCC_APB1ENR_DAC1EN); // clock for DAC
-	RCC->AHBENR |= RCC_AHBENR_DMA2EN; // clock for DMA2
+	SET_BIT(RCC->AHBENR,RCC_AHBENR_DMA2EN); // clock for DMA2
 	SET_BIT(DAC->CR, DAC_CR_EN1); // DAC channel1 enable
 	SET_BIT(DAC->CR,DAC_CR_DMAEN1);
 	MODIFY_REG(DAC->CR, DAC_CR_MAMP1, 11 << DAC_CR_MAMP1_Pos); // Unmask bits[11:0] of LFSR/ triangle amplitude equal to 4095
 	MODIFY_REG(DAC->CR, DAC_CR_TSEL1, 4 << DAC_CR_TSEL1_Pos); // Timer 2 TRGO event
 	SET_BIT(DAC->CR,DAC_CR_TEN1); // DAC channel1 trigger enable
 	CLEAR_BIT(DAC->SWTRIGR, DAC_SWTRIGR_SWTRIG1); //DAC channel1 software trigger disabled
+	
 	// Init DMA
-	DMA2_Channel3->CPAR = (uint32_t)&DAC->DHR12R1; // Adress of data
-  DMA2_Channel3->CMAR =(uint32_t)&Triangle_DAC[0]; // Adress of buffer
+	MODIFY_REG(DMA2_Channel3->CPAR, DMA_CPAR_PA, (uint32_t)(&DAC->DHR12R1)); // Adress of data
+	MODIFY_REG(DMA2_Channel3->CMAR, DMA_CMAR_MA, (uint32_t)(Triangle_DAC)); // Adress of buffer
 	SET_BIT(DMA2_Channel3->CCR, DMA_CCR_TCIE); // Interrupt enable, complete transfer
 	SET_BIT(DMA2_Channel3->CCR, DMA_CCR_DIR); // memmory to perifheral
 	SET_BIT(DMA2_Channel3->CCR, DMA_CCR_CIRC); // circual mode enable
@@ -94,8 +94,7 @@ void DAC1_Init(void) // for T2 TSEL = 100     // DMA2 Channel 3
 	CLEAR_BIT(DMA2_Channel3->CCR, DMA_CCR_PINC); // disabled incrementing perephiral addres
 	DMA2_Channel3->CCR |= (1 << DMA_CCR_PSIZE_Pos); //periphiral data size 16b (half-word)
 	DMA2_Channel3->CCR |= (1 << DMA_CCR_MSIZE_Pos); //memmory data size 16b (half-word)
-	DMA2_Channel3->CNDTR |= (128 << DMA_CNDTR_NDT_Pos);
-//	SET_BIT(DMA2_Channel3->CCR, DMA_CCR_EN); // Enable DMA
+	DMA2_Channel3->CNDTR |= (SIZE_BUFFER_DAC << DMA_CNDTR_NDT_Pos);
 	NVIC_SetPriority(DMA2_Channel3_IRQn,0);
 	NVIC_EnableIRQ(DMA2_Channel3_IRQn);
 	
@@ -123,9 +122,13 @@ void TIM3_Init(void)
 	CLEAR_BIT(TIM3->CR1, TIM_CR1_DIR_Msk); // straight count
 	MODIFY_REG(TIM3->CR2, TIM_CR2_MMS, 2 << TIM_CR2_MMS_Pos); // Update Event for DAC1
 	SET_BIT(TIM3->CR1, TIM_CR1_CEN_Msk); // TIM2 enable
-	NVIC_SetPriority(TIM3_IRQn,4);	
+	NVIC_SetPriority(TIM3_IRQn, 4);	
 	NVIC_EnableIRQ(TIM3_IRQn);
 
+}
+void Opamp_Start(OPAMP_TypeDef* opamp)
+{
+	SET_BIT(opamp->CSR, OPAMP_CSR_OPAMPxEN);
 }
 
 
