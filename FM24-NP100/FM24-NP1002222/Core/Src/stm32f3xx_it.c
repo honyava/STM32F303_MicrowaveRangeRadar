@@ -58,13 +58,8 @@ extern UART_HandleTypeDef huart1;
 /* USER CODE BEGIN EV */
 
 extern volatile uint16_t count_dma_period;
-extern volatile uint8_t flag_rx;
-extern volatile uint8_t flag_dac;
 extern volatile uint8_t count_dac_period;
-extern volatile uint8_t flag_dac_complete;
 extern volatile uint8_t period_number_dac;
-extern volatile uint8_t flag_data_adc_collect;
-extern volatile uint8_t flag_adc_start;
 extern volatile uint32_t BUFF_ADC1_2[SIZE_BUFFER_ADC];
 extern uint8_t UART_command[SIZE_UART_RX];
 extern volatile uint8_t firstByteWait;
@@ -74,6 +69,7 @@ extern struct flags flags;
 
 uint16_t timeOut = 0;
 uint32_t temp_size = 0;
+uint8_t count_rx = 0;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -223,6 +219,17 @@ void USART1_IRQHandler(void)
   /* USER CODE BEGIN USART1_IRQn 0 */
 
   /* USER CODE END USART1_IRQn 0 */
+	
+	if (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE))
+  {
+    count_rx++; 
+		
+		if (firstByteWait == 1)
+		{
+			CLEAR_REG(TIM3->CNT);
+			firstByteWait = 0;
+		}
+  }
   HAL_UART_IRQHandler(&huart1);
   /* USER CODE BEGIN USART1_IRQn 1 */
 
@@ -256,13 +263,13 @@ void DMA1_Channel1_IRQHandler(void) // for ADC1_2 (dual)
 		if (count_dma_period > MAX_ADC_PERIODS) count_dma_period = 0;
 		else count_dma_period++;
 
-		 if(count_dma_period == period_number_dac*4 )
-      {
-        flags.dac = 0;
-				CLEAR_BIT(TIM2->CR1, TIM_CR1_CEN_Msk);
-        CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 disable				
-				flags.data_adc_collect = 1;
-      }
+		if(count_dma_period == period_number_dac*4 )
+    {
+      flags.dac = 0;
+			CLEAR_BIT(TIM2->CR1, TIM_CR1_CEN_Msk);
+      CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 disable				
+			flags.data_adc_collect = 1;
+    }
 
 //			HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
 	}
@@ -273,67 +280,78 @@ void DMA2_Channel3_IRQHandler(void) // for DAC1
 	if(READ_BIT(DMA2->ISR, DMA_ISR_TCIF3)) // transfer complete
 	{
 		SET_BIT(DMA2->IFCR, DMA_IFCR_CGIF3_Msk);
-
-		if (flags.adc_start == 1) 
-		{	
-			flags.adc_start = 0;
-			SET_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 enable
-			SET_BIT(DMA1_Channel1->CCR, DMA_CCR_EN);
-		}
-		if (READ_BIT(TIM8->CR1, TIM_CR1_CEN_Msk))
-		{  
-			flags.dac = 1;
-			count_dac_period++;        
-		}
+		flags.dac = 1;
+		count_dac_period++;        	
 	}
 }
 
 
-void TIM3_IRQHandler(void) // for RX_USART
-{
-	if(READ_BIT(TIM3->SR, TIM_SR_UIF)) // check the flag of interrupt
-	{
-		TIM3->SR &= ~TIM_SR_UIF; // Resetting the flag of interrupt
-		if(firstByteWait != 0)
-		{
-			timeOut = 0; 
-		}
-		else 
-		{
-			timeOut++;
-			if(timeOut >= 100) //wait 2 ms
-			{
-				HAL_UART_AbortReceive_IT(&huart1);
-				firstByteWait = 1; 
-				timeOut = 0;
-				HAL_UART_Receive_IT(&huart1, UART_command, 1);
-			}
-		}
-	}
-}
+//void TIM3_IRQHandler(void) // for RX_USART
+//{
+//	if(READ_BIT(TIM3->SR, TIM_SR_UIF)) // check the flag of interrupt
+//	{
+//		CLEAR_BIT(TIM3->SR, TIM_SR_UIF);
+//		if(firstByteWait != 0)
+//		{
+//			timeOut = 0; 
+//		}
+//		else 
+//		{
+//			timeOut++;
+//			if(timeOut >= 100) //wait 2 ms
+//			{
+//				HAL_UART_AbortReceive_IT(&huart1);
+//				firstByteWait = 1; 
+//				timeOut = 0;
+//				HAL_UART_Receive_IT(&huart1, UART_command, 1);
+//			}
+//		}
+//	}
+//}
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
 	if(huart == &huart1)
 	{
-		HAL_UART_Receive_IT(&huart1, UART_command, 1);
+		HAL_UART_Receive_IT(&huart1, UART_command, 4);
 		temp_size = 0;
 	}     
+}
+
+//void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+//{
+//	if(huart == &huart1)
+//	{
+//		if (firstByteWait != 0)
+//		{	
+//			firstByteWait = 0;
+////			if (UART_command[0] == 1)
+////			{
+//					flags.rx = 1;
+////			}
+//			HAL_UART_Receive_IT(&huart1, UART_command + 1, SIZE_UART_RX - 1);
+//		}
+//	}
+//}
+
+void TIM3_IRQHandler(void) // for RX_USART
+{
+	if(READ_BIT(TIM3->SR, TIM_SR_UIF)) // check the flag of interrupt
+	{
+		CLEAR_BIT(TIM3->SR, TIM_SR_UIF);
+		firstByteWait = 1;
+		if(count_rx != 0) HAL_UART_Receive_IT(&huart1, UART_command, 4);
+		count_rx = 0;
+	}
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	if(huart == &huart1)
 	{
-		if (firstByteWait != 0)
-		{	
-			firstByteWait = 0;
-			if (UART_command[0] == 1)
-			{
-					flags.rx = 1;
-			}
-			HAL_UART_Receive_IT(&huart1, UART_command + 1, SIZE_UART_RX - 1);
-		}
+			count_rx = 0;
+			flags.rx = 1;
+			HAL_UART_Receive_IT(&huart1, UART_command, 4);
 	}
 }
 

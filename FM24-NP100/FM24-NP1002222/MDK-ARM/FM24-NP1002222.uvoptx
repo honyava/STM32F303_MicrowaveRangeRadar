@@ -223,17 +223,17 @@
         <Ww>
           <count>14</count>
           <WinNumber>1</WinNumber>
-          <ItemText>message_ADC</ItemText>
+          <ItemText>message_size,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>15</count>
           <WinNumber>1</WinNumber>
-          <ItemText>message_size,0x0A</ItemText>
+          <ItemText>flag_adc,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>16</count>
           <WinNumber>1</WinNumber>
-          <ItemText>flag_adc,0x0A</ItemText>
+          <ItemText>\\FM24_NP1002222\../Core/Src/main.c\flag_adc</ItemText>
         </Ww>
         <Ww>
           <count>17</count>
@@ -243,12 +243,12 @@
         <Ww>
           <count>18</count>
           <WinNumber>1</WinNumber>
-          <ItemText>\\FM24_NP1002222\../Core/Src/main.c\flag_adc</ItemText>
+          <ItemText>message_ADC12</ItemText>
         </Ww>
         <Ww>
           <count>19</count>
           <WinNumber>1</WinNumber>
-          <ItemText>message_ADC12</ItemText>
+          <ItemText>count_rx</ItemText>
         </Ww>
       </WatchWindow1>
       <MemoryWindow1>
@@ -313,6 +313,10 @@
         <Entry>
           <Name>System Viewer\OPAMP</Name>
           <WinId>35902</WinId>
+        </Entry>
+        <Entry>
+          <Name>System Viewer\TIM3</Name>
+          <WinId>35901</WinId>
         </Entry>
         <Entry>
           <Name>System Viewer\USART1</Name>

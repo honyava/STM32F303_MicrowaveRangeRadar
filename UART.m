@@ -14,7 +14,7 @@ START = 1; STOP = 2; RESET = 3; TEST = 4; RAMP1 = 5; RAMP2 = 6; AMPL = 7;
 %SendDeviation(500e3, RAMP1, s); %deviation - kHz (in function 500e3 = 500MHz)
 %SendCommand(command, s) %only for STOP_RESET_TEST_RAMP1_RAMP2
 period_Number_stm32 = 4;  % max period_Number_stm32_stm32 = 4
-period_Number_pc = 3; % can be any number
+period_Number_pc = 4; % can be any number
 
 % on graph will be period_Number_stm32*period_Number_pc PERIODS of signal
 

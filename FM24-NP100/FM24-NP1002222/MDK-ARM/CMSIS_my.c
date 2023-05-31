@@ -61,16 +61,7 @@ void ADC1_2_Dual_Init(void)
 	NVIC_EnableIRQ(DMA1_Channel1_IRQn);
 }
 
-void TIM8_Init(void)
-{
-	SET_BIT(RCC->APB2ENR, RCC_APB2ENR_TIM8EN); //clock to TIM8 72MHz
-	CLEAR_BIT(TIM8->SMCR, TIM_SMCR_SMS);
-	CLEAR_REG(TIM8->CR1);
-	MODIFY_REG(TIM8->PSC, TIM_PSC_PSC, 0);
-	MODIFY_REG(TIM8->ARR, TIM_ARR_ARR, (125 - 1)); //576 kHz TIM8 then for ADC 576kHz  
-	CLEAR_BIT(TIM8->CR1, TIM_CR1_DIR_Msk); // straight count
-	MODIFY_REG(TIM8->CR2, TIM_CR2_MMS, 2 << TIM_CR2_MMS_Pos); // Update Event for ADC1
-}
+
 
 void DAC1_Init(void) // for T2 TSEL = 100     // DMA2 Channel 3
 {
@@ -95,12 +86,23 @@ void DAC1_Init(void) // for T2 TSEL = 100     // DMA2 Channel 3
 	DMA2_Channel3->CCR |= (1 << DMA_CCR_PSIZE_Pos); //periphiral data size 16b (half-word)
 	DMA2_Channel3->CCR |= (1 << DMA_CCR_MSIZE_Pos); //memmory data size 16b (half-word)
 	DMA2_Channel3->CNDTR |= (SIZE_BUFFER_DAC << DMA_CNDTR_NDT_Pos);
+	SET_BIT(DMA2_Channel3->CCR, DMA_CCR_EN); // Enable DMA
 	NVIC_SetPriority(DMA2_Channel3_IRQn,0);
 	NVIC_EnableIRQ(DMA2_Channel3_IRQn);
 	
 }
+void TIM8_Init(void) // for ADC
+{
+	SET_BIT(RCC->APB2ENR, RCC_APB2ENR_TIM8EN); //clock to TIM8 72MHz
+	CLEAR_BIT(TIM8->SMCR, TIM_SMCR_SMS);
+	CLEAR_REG(TIM8->CR1);
+	MODIFY_REG(TIM8->PSC, TIM_PSC_PSC, 0);
+	MODIFY_REG(TIM8->ARR, TIM_ARR_ARR, (125 - 1)); //576 kHz TIM8 then for ADC 576kHz  
+	CLEAR_BIT(TIM8->CR1, TIM_CR1_DIR_Msk); // straight count
+	MODIFY_REG(TIM8->CR2, TIM_CR2_MMS, 2 << TIM_CR2_MMS_Pos); // Update Event for ADC1
+}
 
-void TIM2_Init(void)
+void TIM2_Init(void) // dor DAC
 {
 	SET_BIT(RCC->APB1ENR, RCC_APB1ENR_TIM2EN); //clock to TIM2 72MHz
 	CLEAR_BIT(TIM2->SMCR, TIM_SMCR_SMS);
@@ -116,12 +118,12 @@ void TIM3_Init(void)
 	SET_BIT(RCC->APB1ENR, RCC_APB1ENR_TIM3EN); //clock to TIM3 72MHz
 	CLEAR_BIT(TIM3->SMCR, TIM_SMCR_SMS);
 	CLEAR_REG(TIM3->CR1);
-	MODIFY_REG(TIM3->PSC, TIM_PSC_PSC, 1-1);
-	MODIFY_REG(TIM3->ARR, TIM_ARR_ARR, (7200 - 1)); //10 kHz TIM3 
+	MODIFY_REG(TIM3->PSC, TIM_PSC_PSC, 20-1);
+	MODIFY_REG(TIM3->ARR, TIM_ARR_ARR, (7200 - 1)); //500 Hz TIM3 
 	SET_BIT(TIM3->DIER, TIM_DIER_UIE);
 	CLEAR_BIT(TIM3->CR1, TIM_CR1_DIR_Msk); // straight count
-	MODIFY_REG(TIM3->CR2, TIM_CR2_MMS, 2 << TIM_CR2_MMS_Pos); // Update Event for DAC1
-	SET_BIT(TIM3->CR1, TIM_CR1_CEN_Msk); // TIM2 enable
+	MODIFY_REG(TIM3->CR2, TIM_CR2_MMS, 2 << TIM_CR2_MMS_Pos); 
+	SET_BIT(TIM3->CR1, TIM_CR1_CEN_Msk); // TIM3 enable
 	NVIC_SetPriority(TIM3_IRQn, 4);	
 	NVIC_EnableIRQ(TIM3_IRQn);
 

@@ -107,7 +107,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
 void Opamp_Start(OPAMP_TypeDef* opamp);
 void Make_Ramp(uint8_t ramp, uint16_t ampl);
 void Rx_Complete(uint8_t flag_rx_temp);
-//void Collect_ADC_Complete(uint8_t flag_data_adc_collect_temp, struct message_ADC message_ADC12_temp);
+void Collect_ADC_Complete(struct flags flags_temp);
 
 /* USER CODE END EFP */
 

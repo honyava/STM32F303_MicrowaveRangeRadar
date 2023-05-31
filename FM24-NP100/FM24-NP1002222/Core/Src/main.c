@@ -52,12 +52,8 @@ OPAMP_HandleTypeDef hopamp4;
 volatile uint16_t Triangle_DAC[SIZE_BUFFER_DAC] = {0,};
 volatile uint32_t BUFF_ADC1_2[SIZE_BUFFER_ADC] = {0,};
 
-volatile uint16_t count_dma_period = 0;
-//volatile uint8_t flag_dac = 0;	
+volatile uint16_t count_dma_period = 0;	
 volatile uint8_t count_dac_period = 0;	
-//volatile uint8_t flag_rx = 0;
-//volatile uint8_t flag_data_adc_collect = 0;
-//volatile uint8_t flag_adc_start = 0;
 volatile uint8_t period_number_dac = 0;
 volatile uint8_t period_number = 0;
 volatile uint16_t message_size = 0;	
@@ -66,7 +62,6 @@ volatile uint16_t ampl = 4090;
 
 //struct message_ADC message_ADC12 = {0};
 uint8_t UART_command[SIZE_UART_RX];
-const uint8_t start_byte = 0x01;	
 
 struct flags flags = {0};
 
@@ -136,35 +131,22 @@ int main(void)
 	Make_Ramp(RAMP1_COMMAND, ampl);
 	
 	firstByteWait = 1;
-	HAL_UART_Receive_IT(&huart1, UART_command, 1);
+//	HAL_UART_Receive_IT(&huart1, UART_command, 1);
+	HAL_UART_Receive_IT(&huart1, UART_command, 4);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-		Rx_Complete(flags.rx);
-		if ((UART_command[0] == START_COMMAND) && (UART_command[1] != 0))  //&& (UART_command[1] <= 14)
+//		Rx_Complete(flags.rx);
+
+		if ((UART_command[0] == START_COMMAND) && (UART_command[1] != 0))
 		{
-//			Collect_ADC_Complete(flag_data_adc_collect);
-			
-			if (flags.data_adc_collect) 
-			{	
-				extern struct message_ADC message_ADC12;
-				HAL_UART_AbortReceive_IT(&huart1);
-				flags.adc_start = 0;
-				UART_command[0] = 0;
-				UART_command[1] = 0;
-				period_number = period_number_dac;
-				message_size = SIZE_BUFFER_ADC*count_dma_period*(sizeof(uint32_t) / sizeof(uint8_t));
-				message_ADC12.preamble = (start_byte) | (period_number << 8) | (message_size << 16);
-				
-				flags.data_adc_collect = 0;
-				count_dma_period = 0;
-				count_dac_period = 0;
-				
-				HAL_UART_Transmit_IT(&huart1, (uint8_t*)&message_ADC12,  message_size + sizeof(message_ADC12.preamble));
-			}
+			period_number_dac = UART_command[1];	
+			SET_BIT(TIM2->CR1, TIM_CR1_CEN_Msk); // TIM2 enable
+			SET_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 enable
+			Collect_ADC_Complete(flags);
 		}
 		else if(UART_command[0] == STOP_COMMAND)
 		{
@@ -194,13 +176,13 @@ int main(void)
 			Make_Ramp(RAMP2_COMMAND, ampl);
 			
 		}
-		else if(UART_command[0] == AMPL_COMMAND)   //strncmp ((char*)UART_command, AMPL_TX, 2)
+		else if(UART_command[0] == AMPL_COMMAND && flags.rx == 1) 
 		{
-			HAL_Delay(10);
 			ampl = (UART_command[2]) + (UART_command[3] << 8);
 			UART_command[0] = UART_command[1]; // make TEST 1 time
 			UART_command[2] = 0;
 			UART_command[3] = 0;
+			flags.rx = 0;
 		}
 		
     /* USER CODE END WHILE */
