@@ -302,21 +302,6 @@ void DMA2_Channel3_IRQHandler(void) // for DAC1
 	}
 }
 
-//void TIM8_UP_IRQHandler(void) // for ADC1_2 (dual)
-//{
-//	if(READ_BIT(TIM8->SR, TIM_SR_UIF)) // check the flag of interrupt
-//	{
-//		TIM8->SR &= ~TIM_SR_UIF; // Resetting the flag of interrupt
-//	}
-//}
-
-//void TIM2_IRQHandler(void) // for DAC1
-//{
-//	if(READ_BIT(TIM2->SR, TIM_SR_UIF)) // check the flag of interrupt
-//	{
-//		TIM2->SR &= ~TIM_SR_UIF; // Resetting the flag of interrupt
-//	}
-//}
 
 void TIM3_IRQHandler(void) // for RX_USART
 {
@@ -348,10 +333,6 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 		flag_tx = 0;
 		HAL_UART_Receive_IT(&huart1, UART_command, 1);
 		temp_size = 0;
-//		memset(message_ADC12.BUFF, 0, sizeof(message_ADC12.BUFF));
-		
-//		flag_dma_complete = 0;
-//		flag_trans = 0;
 	}     
 }
 
