@@ -58,15 +58,15 @@
 extern UART_HandleTypeDef huart1;
 /* USER CODE BEGIN EV */
 //extern uint8_t flag_dma_half;
-extern volatile uint32_t flag_dma_complete;
+extern volatile uint8_t flag_dma_complete;
 extern volatile uint8_t flag_tx;
 extern volatile uint8_t flag_rx;
-extern volatile uint32_t flag_dac;
-extern volatile uint32_t flag_dac_count;
-extern volatile uint32_t flag_dac_complete;
+extern volatile uint8_t flag_dac;
+extern volatile uint8_t flag_dac_count;
+extern volatile uint8_t flag_dac_complete;
 extern volatile uint8_t period_number_DAC;
-extern volatile uint32_t flag_trans;
-extern volatile uint32_t flag_adc_start;
+extern volatile uint8_t flag_trans;
+extern volatile uint8_t flag_adc_start;
 extern volatile uint32_t BUFF_ADC1_2[SIZE_BUFFER_ADC];
 extern uint8_t UART_command[SIZE_UART_RX];
 extern volatile uint8_t firstByteWait;

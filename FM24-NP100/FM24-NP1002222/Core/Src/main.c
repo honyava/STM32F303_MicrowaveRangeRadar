@@ -80,14 +80,14 @@ const uint16_t Triangle_DAC[128] = {0,	64,	128,	192,	256,	320,	384,	448,	512,	57
 uint16_t Triangle_DAC3[128] = {0,};
 	
 volatile uint32_t BUFF_ADC1_2[SIZE_BUFFER_ADC] = {0,};
-volatile uint32_t flag_dma_complete = 0;
-volatile uint32_t flag_dac = 0;	
-volatile uint32_t flag_dac_count = 0;	
-volatile uint32_t flag_tx = 0;
-volatile uint32_t flag_rx = 0;
-volatile uint32_t flag_trans = 0;
-volatile uint32_t flag_adc_start = 0;
-volatile uint32_t flag_dac_compete = 0;
+volatile uint8_t flag_dma_complete = 0;
+volatile uint8_t flag_dac = 0;	
+volatile uint8_t flag_dac_count = 0;	
+volatile uint8_t flag_tx = 0;
+volatile uint8_t flag_rx = 0;
+volatile uint8_t flag_trans = 0;
+volatile uint8_t flag_adc_start = 0;
+volatile uint8_t flag_dac_compete = 0;
 volatile uint8_t period_number_DAC = 0;
 	
 const uint8_t start_byte = 0x01;	
