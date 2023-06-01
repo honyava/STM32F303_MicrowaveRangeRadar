@@ -2,7 +2,15 @@
 
 extern volatile uint32_t BUFF_ADC1_2[SIZE_BUFFER_ADC];
 extern volatile uint16_t Triangle_DAC[SIZE_BUFFER_DAC];
-	
+
+/******************************************************************************/
+/* Function Name : ADC1_2_Dual_Init */
+/* Description : Initializes ADC1 and ADC2 in dual mode. Configures the */
+/* ADC settings, ADC channels, ADC triggers, DMA1 Channel 1, and interrupts. */
+/* Enables the ADCs and starts the conversions, but not start TIM8 */
+/* Parameters : None */
+/* Return : None */
+/******************************************************************************/
 void ADC1_2_Dual_Init(void)
 {
 	SET_BIT(RCC->AHBENR,RCC_AHBENR_ADC12EN);
@@ -61,9 +69,14 @@ void ADC1_2_Dual_Init(void)
 	NVIC_EnableIRQ(DMA1_Channel1_IRQn);
 }
 
-
-
-void DAC1_Init(void) // for T2 TSEL = 100     // DMA2 Channel 3
+/******************************************************************************/
+/* Function Name : DAC1_Init */
+/* Description : Initializes DAC1 and configures its settings, triggers, */
+/* and DMA. Enables DAC1 and DMA2 Channel 3, but not start TIM2. */
+/* Parameters : None */
+/* Return : None */
+/******************************************************************************/
+void DAC1_Init(void)   
 {
 	SET_BIT(RCC->APB1ENR,RCC_APB1ENR_DAC1EN); // clock for DAC
 	SET_BIT(RCC->AHBENR,RCC_AHBENR_DMA2EN); // clock for DMA2
@@ -89,30 +102,50 @@ void DAC1_Init(void) // for T2 TSEL = 100     // DMA2 Channel 3
 	SET_BIT(DMA2_Channel3->CCR, DMA_CCR_EN); // Enable DMA
 	NVIC_SetPriority(DMA2_Channel3_IRQn,0);
 	NVIC_EnableIRQ(DMA2_Channel3_IRQn);
-	
 }
+
+/******************************************************************************/
+/* Function Name : TIM8_Init */
+/* Description : Initializes TIM8 and configures its settings for ADC. */
+/* Parameters : None */
+/* Return : None */
+/******************************************************************************/
 void TIM8_Init(void) // for ADC
 {
 	SET_BIT(RCC->APB2ENR, RCC_APB2ENR_TIM8EN); //clock to TIM8 72MHz
 	CLEAR_BIT(TIM8->SMCR, TIM_SMCR_SMS);
 	CLEAR_REG(TIM8->CR1);
 	MODIFY_REG(TIM8->PSC, TIM_PSC_PSC, 0);
-	MODIFY_REG(TIM8->ARR, TIM_ARR_ARR, (TIM8_ARR - 1)); //576 kHz TIM8 then for ADC 576kHz  
-	CLEAR_BIT(TIM8->CR1, TIM_CR1_DIR_Msk); // straight count
+	MODIFY_REG(TIM8->ARR, TIM_ARR_ARR, (TIM8_ARR - 1)); 
+	CLEAR_BIT(TIM8->CR1, TIM_CR1_DIR_Msk); 
 	MODIFY_REG(TIM8->CR2, TIM_CR2_MMS, 2 << TIM_CR2_MMS_Pos); // Update Event for ADC1
 }
 
-void TIM2_Init(void) // for DAC
+/******************************************************************************/
+/* Function Name : TIM2_Init */
+/* Description : Initializes TIM2 and configures its settings for DAC. */
+/* Parameters : None */
+/* Return : None */
+/******************************************************************************/
+void TIM2_Init(void)
 {
 	SET_BIT(RCC->APB1ENR, RCC_APB1ENR_TIM2EN); //clock to TIM2 72MHz
 	CLEAR_BIT(TIM2->SMCR, TIM_SMCR_SMS);
 	CLEAR_REG(TIM2->CR1);
 	MODIFY_REG(TIM2->PSC, TIM_PSC_PSC, 0);
-	MODIFY_REG(TIM2->ARR, TIM_ARR_ARR, (TIM2_ARR - 1)); //144 kHz TIM2 then for DAC 144 kHz  144/128 = 1.125kHz
-	CLEAR_BIT(TIM2->CR1, TIM_CR1_DIR_Msk); // straight count
+	MODIFY_REG(TIM2->ARR, TIM_ARR_ARR, (TIM2_ARR - 1)); 
+	CLEAR_BIT(TIM2->CR1, TIM_CR1_DIR_Msk); 
 	MODIFY_REG(TIM2->CR2, TIM_CR2_MMS, 2 << TIM_CR2_MMS_Pos); // Update Event for DAC1
 }
 
+/******************************************************************************/
+/* Function Name : TIM3_Init */
+/* Description : Initializes TIM3 and configures its settings for DAC. */
+/* This timer is used for timing the duration within which a complete */
+/* UART_RX is expected to arrive. Delay = 2 ms */
+/* Parameters : None */
+/* Return : None */
+/******************************************************************************/
 void TIM3_Init(void)
 {
 	SET_BIT(RCC->APB1ENR, RCC_APB1ENR_TIM3EN); //clock to TIM3 72MHz
@@ -121,13 +154,19 @@ void TIM3_Init(void)
 	MODIFY_REG(TIM3->PSC, TIM_PSC_PSC, 20-1);
 	MODIFY_REG(TIM3->ARR, TIM_ARR_ARR, (7200 - 1)); //500 Hz TIM3 
 	SET_BIT(TIM3->DIER, TIM_DIER_UIE);
-	CLEAR_BIT(TIM3->CR1, TIM_CR1_DIR_Msk); // straight count
+	CLEAR_BIT(TIM3->CR1, TIM_CR1_DIR_Msk);
 	MODIFY_REG(TIM3->CR2, TIM_CR2_MMS, 2 << TIM_CR2_MMS_Pos); 
-	SET_BIT(TIM3->CR1, TIM_CR1_CEN_Msk); // TIM3 enable
+	SET_BIT(TIM3->CR1, TIM_CR1_CEN_Msk); 
 	NVIC_SetPriority(TIM3_IRQn, 4);	
 	NVIC_EnableIRQ(TIM3_IRQn);
-
 }
+
+/******************************************************************************/
+/* Function Name : Opamp_Start */
+/* Description : Starts the specified operational amplifier. */
+/* Parameters : opamp: Pointer to the operational amplifier instance */
+/* Return : None */
+/******************************************************************************/
 void Opamp_Start(OPAMP_TypeDef* opamp)
 {
 	SET_BIT(opamp->CSR, OPAMP_CSR_OPAMPxEN);

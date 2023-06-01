@@ -111,6 +111,7 @@ void SysTick_Handler(void)
 {
   HAL_IncTick();
 }
+
 /******************************************************************************/
 /* Function Name : USART1_IRQHandler */
 /* Description : Interrupt handler for USART1. Handles the RXNE interrupt */
@@ -135,7 +136,6 @@ void USART1_IRQHandler(void)
   }
   HAL_UART_IRQHandler(&huart1);
 }
-
 
 /******************************************************************************/
 /* Function Name : DMA1_Channel1_IRQHandler */
@@ -184,6 +184,7 @@ void DMA1_Channel1_IRQHandler(void) // for ADC1_2 (dual)
 			HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13); // TEST period PIN
 	}
 }
+
 /******************************************************************************/
 /* Function Name : DMA2_Channel3_IRQHandler */
 /* Description : Interrupt handler for DMA2 channel 3 used for DAC1. */
@@ -193,7 +194,6 @@ void DMA1_Channel1_IRQHandler(void) // for ADC1_2 (dual)
 /* Parameters : None */
 /* Return : None */
 /******************************************************************************/
-
 
 void DMA2_Channel3_IRQHandler(void) // for DAC1
 {
@@ -225,7 +225,6 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 		temp_size = 0;
 	}     
 }
-
 
 /******************************************************************************/
 /* Function Name : TIM3_IRQHandler */
@@ -267,6 +266,3 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			HAL_UART_Receive_IT(&huart1, UART_command, sizeof(UART_command)/sizeof(uint8_t));
 	}
 }
-
-
-
