@@ -6,12 +6,12 @@ fm24-np1002222\stm32f3xx_it.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal
 fm24-np1002222\stm32f3xx_it.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_def.h
 fm24-np1002222\stm32f3xx_it.o: ../Drivers/CMSIS/Device/ST/STM32F3xx/Include/stm32f3xx.h
 fm24-np1002222\stm32f3xx_it.o: ../Drivers/CMSIS/Device/ST/STM32F3xx/Include/stm32f303xc.h
-fm24-np1002222\stm32f3xx_it.o: ../Drivers/CMSIS/Include/core_cm4.h
+fm24-np1002222\stm32f3xx_it.o: C:\Users\User\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\core_cm4.h
 fm24-np1002222\stm32f3xx_it.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
-fm24-np1002222\stm32f3xx_it.o: ../Drivers/CMSIS/Include/cmsis_version.h
-fm24-np1002222\stm32f3xx_it.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
-fm24-np1002222\stm32f3xx_it.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
-fm24-np1002222\stm32f3xx_it.o: ../Drivers/CMSIS/Include/mpu_armv7.h
+fm24-np1002222\stm32f3xx_it.o: C:\Users\User\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_version.h
+fm24-np1002222\stm32f3xx_it.o: C:\Users\User\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_compiler.h
+fm24-np1002222\stm32f3xx_it.o: C:\Users\User\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_armcc.h
+fm24-np1002222\stm32f3xx_it.o: C:\Users\User\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\mpu_armv7.h
 fm24-np1002222\stm32f3xx_it.o: ../Drivers/CMSIS/Device/ST/STM32F3xx/Include/system_stm32f3xx.h
 fm24-np1002222\stm32f3xx_it.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal.h
 fm24-np1002222\stm32f3xx_it.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h
@@ -33,6 +33,6 @@ fm24-np1002222\stm32f3xx_it.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal
 fm24-np1002222\stm32f3xx_it.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_pwr_ex.h
 fm24-np1002222\stm32f3xx_it.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_uart.h
 fm24-np1002222\stm32f3xx_it.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_uart_ex.h
-fm24-np1002222\stm32f3xx_it.o: ../Drivers/CMSIS/Include/core_cm4.h
+fm24-np1002222\stm32f3xx_it.o: C:\Users\User\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\core_cm4.h
 fm24-np1002222\stm32f3xx_it.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 fm24-np1002222\stm32f3xx_it.o: ../Core/Inc/stm32f3xx_it.h

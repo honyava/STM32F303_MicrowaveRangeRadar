@@ -14,34 +14,18 @@ extern struct message_ADC message_ADC12;
 
 const uint8_t start_byte = 0x01;	
 
-void Rx_Complete(uint8_t flag_rx_temp)
-{
-	if ( UART_command[1] != 0)
-	{
-//		HAL_Delay(1);
-//		flags.rx = 0;
-//		if(UART_command[1] != 0)
-//		{
-//			HAL_UART_AbortReceive_IT(&huart1);
-			period_number_dac = UART_command[1];	
-			SET_BIT(TIM2->CR1, TIM_CR1_CEN_Msk); // TIM2 enable
-			SET_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 enable
-//		}
-	}
-	return;
-}
 void Collect_ADC_Complete(struct flags flags_temp)
 {
 	if (flags_temp.data_adc_collect) 
 	{
 		uint8_t period_number = period_number_dac;
 		uint16_t message_size = message_size = SIZE_BUFFER_ADC*count_dma_period*(sizeof(uint32_t) / sizeof(uint8_t)); //bytes;	
-//		HAL_UART_AbortReceive_IT(&huart1);
 		flags.data_adc_collect = 0;
 		count_dma_period = 0;
 		count_dac_period = 0;	
 		UART_command[0] = 0;
 		UART_command[1] = 0;
+		flags.en_adc_dac = 1;
 		message_ADC12.preamble = (start_byte) | (period_number << 8) | (message_size << 16);
 		HAL_UART_Transmit_IT(&huart1, (uint8_t*)&message_ADC12,  message_size + sizeof(message_ADC12.preamble));
 	}
@@ -69,4 +53,14 @@ void Make_Ramp(uint8_t ramp, uint16_t ampl)
 		}
 	}
 	MODIFY_REG(DMA2_Channel3->CMAR, DMA_CMAR_MA, (uint32_t)(Triangle_DAC)); // Adress of buffer
+}
+void Enable_DAC_ADC(struct flags flags_temp)
+{
+	if(flags_temp.en_adc_dac == 1)
+	{
+		SET_BIT(TIM2->CR1, TIM_CR1_CEN_Msk);
+		SET_BIT(TIM8->CR1, TIM_CR1_CEN_Msk);
+		period_number_dac = UART_command[1];
+		flags_temp.en_adc_dac = 0;
+	}
 }

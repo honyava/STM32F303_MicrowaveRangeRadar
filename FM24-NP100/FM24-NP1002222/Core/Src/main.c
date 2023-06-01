@@ -65,6 +65,7 @@ uint8_t UART_command[SIZE_UART_RX];
 
 struct flags flags = {0};
 
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -131,27 +132,24 @@ int main(void)
 	Make_Ramp(RAMP1_COMMAND, ampl);
 	
 	firstByteWait = 1;
-//	HAL_UART_Receive_IT(&huart1, UART_command, 1);
-	HAL_UART_Receive_IT(&huart1, UART_command, 4);
+	flags.en_adc_dac = 1;
+	HAL_UART_Receive_IT(&huart1, UART_command, sizeof(UART_command)/sizeof(uint8_t));
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-//		Rx_Complete(flags.rx);
 
 		if ((UART_command[0] == START_COMMAND) && (UART_command[1] != 0))
 		{
-			period_number_dac = UART_command[1];	
-			SET_BIT(TIM2->CR1, TIM_CR1_CEN_Msk); // TIM2 enable
-			SET_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 enable
+			Enable_DAC_ADC(flags);
 			Collect_ADC_Complete(flags);
 		}
 		else if(UART_command[0] == STOP_COMMAND)
 		{
 			UART_command[0] = 0;
-			CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); // TIM8 disable
+			CLEAR_BIT(TIM8->CR1, TIM_CR1_CEN_Msk); 
 		}
 		else if(UART_command[0] == RESET_COMMAND)
 		{
@@ -309,13 +307,7 @@ static void MX_OPAMP2_Init(void)
 static void MX_OPAMP3_Init(void)
 {
 
-  /* USER CODE BEGIN OPAMP3_Init 0 */
-//	OPAMP_HandleTypeDef hopamp3;
-  /* USER CODE END OPAMP3_Init 0 */
 
-  /* USER CODE BEGIN OPAMP3_Init 1 */
-
-  /* USER CODE END OPAMP3_Init 1 */
   hopamp3.Instance = OPAMP3;
   hopamp3.Init.Mode = OPAMP_FOLLOWER_MODE;
   hopamp3.Init.NonInvertingInput = OPAMP_NONINVERTINGINPUT_IO0;
@@ -339,13 +331,6 @@ static void MX_OPAMP3_Init(void)
 static void MX_OPAMP4_Init(void)
 {
 
-  /* USER CODE BEGIN OPAMP4_Init 0 */
-//	OPAMP_HandleTypeDef hopamp4;
-  /* USER CODE END OPAMP4_Init 0 */
-
-  /* USER CODE BEGIN OPAMP4_Init 1 */
-
-  /* USER CODE END OPAMP4_Init 1 */
   hopamp4.Instance = OPAMP4;
   hopamp4.Init.Mode = OPAMP_FOLLOWER_MODE;
   hopamp4.Init.NonInvertingInput = OPAMP_NONINVERTINGINPUT_IO3;
@@ -369,12 +354,7 @@ static void MX_OPAMP4_Init(void)
 static void MX_USART1_UART_Init(void)
 {
 
-  /* USER CODE BEGIN USART1_Init 0 */
 	NVIC_SetPriority(USART1_IRQn,2);
-//	HAL_NVIC_SetPriority(USART1_IRQn, 2, 2);
-  /* USER CODE END USART1_Init 0 */
-
-  /* USER CODE BEGIN USART1_Init 1 */
 
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
@@ -414,6 +394,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : PC13 */
   GPIO_InitStruct.Pin = GPIO_PIN_13;
@@ -421,6 +402,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+	
+	/*Configure GPIO pin : PB15 */   
+  GPIO_InitStruct.Pin = GPIO_PIN_15;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PA4 */
   GPIO_InitStruct.Pin = GPIO_PIN_4;
@@ -428,13 +416,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PA15 */
-  GPIO_InitStruct.Pin = GPIO_PIN_15;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-  GPIO_InitStruct.Alternate = GPIO_AF4_I2C1;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 }
 

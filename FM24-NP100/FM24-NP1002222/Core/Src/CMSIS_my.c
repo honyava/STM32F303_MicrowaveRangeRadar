@@ -8,7 +8,7 @@ void ADC1_2_Dual_Init(void)
 	SET_BIT(RCC->AHBENR,RCC_AHBENR_ADC12EN);
 	SET_BIT(RCC->AHBENR,RCC_AHBENR_DMA1EN);
 	
-/////////Multi-mode
+  ///////Multi-mode
 	SET_BIT(ADC12_COMMON->CCR, ADC12_CCR_CKMODE_0);
 	SET_BIT(RCC->CFGR2, RCC_CFGR2_ADCPRE12_DIV1);
 	SET_BIT(RCC->AHBENR, RCC_AHBENR_ADC12EN);
@@ -43,7 +43,7 @@ void ADC1_2_Dual_Init(void)
 	SET_BIT(ADC1->CR, ADC_CR_ADSTART); // Starts conversion of regular channels ADC1
 	SET_BIT(ADC2->CR, ADC_CR_ADEN);    // Enable ADC2
 	
-	// Init DMA
+	////////////// Init DMA
 	MODIFY_REG(DMA1_Channel1->CPAR, DMA_CPAR_PA, (uint32_t)(&ADC12_COMMON->CDR)); // Adress of data
 	MODIFY_REG(DMA1_Channel1->CMAR, DMA_CMAR_MA, (uint32_t)(BUFF_ADC1_2)); // Adress of buffer
 	SET_BIT(DMA1_Channel1->CCR, DMA_CCR_TCIE); // Interrupt enable, complete transfer
@@ -97,18 +97,18 @@ void TIM8_Init(void) // for ADC
 	CLEAR_BIT(TIM8->SMCR, TIM_SMCR_SMS);
 	CLEAR_REG(TIM8->CR1);
 	MODIFY_REG(TIM8->PSC, TIM_PSC_PSC, 0);
-	MODIFY_REG(TIM8->ARR, TIM_ARR_ARR, (125 - 1)); //576 kHz TIM8 then for ADC 576kHz  
+	MODIFY_REG(TIM8->ARR, TIM_ARR_ARR, (TIM8_ARR - 1)); //576 kHz TIM8 then for ADC 576kHz  
 	CLEAR_BIT(TIM8->CR1, TIM_CR1_DIR_Msk); // straight count
 	MODIFY_REG(TIM8->CR2, TIM_CR2_MMS, 2 << TIM_CR2_MMS_Pos); // Update Event for ADC1
 }
 
-void TIM2_Init(void) // dor DAC
+void TIM2_Init(void) // for DAC
 {
 	SET_BIT(RCC->APB1ENR, RCC_APB1ENR_TIM2EN); //clock to TIM2 72MHz
 	CLEAR_BIT(TIM2->SMCR, TIM_SMCR_SMS);
 	CLEAR_REG(TIM2->CR1);
 	MODIFY_REG(TIM2->PSC, TIM_PSC_PSC, 0);
-	MODIFY_REG(TIM2->ARR, TIM_ARR_ARR, (500 - 1)); //144 kHz TIM2 then for DAC 144 kHz  144/128 = 1.125kHz
+	MODIFY_REG(TIM2->ARR, TIM_ARR_ARR, (TIM2_ARR - 1)); //144 kHz TIM2 then for DAC 144 kHz  144/128 = 1.125kHz
 	CLEAR_BIT(TIM2->CR1, TIM_CR1_DIR_Msk); // straight count
 	MODIFY_REG(TIM2->CR2, TIM_CR2_MMS, 2 << TIM_CR2_MMS_Pos); // Update Event for DAC1
 }
