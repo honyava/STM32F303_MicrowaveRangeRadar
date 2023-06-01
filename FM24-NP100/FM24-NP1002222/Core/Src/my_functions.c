@@ -6,7 +6,6 @@ extern volatile uint16_t count_dma_period;
 extern volatile uint8_t period_number_dac;
 extern volatile uint8_t count_dac_period;	
 
-
 extern uint8_t UART_command[SIZE_UART_RX];
 
 extern struct flags flags;
@@ -14,6 +13,14 @@ extern struct message_ADC message_ADC12;
 
 const uint8_t start_byte = 0x01;	
 
+/**
+@brief This function handles the completion of ADC data collection.
+@param flags_temp: Current status of flags
+@retval None
+@note
+      This function is called when the ADC data collection is complete. 
+      It prepares the data for transmission over UART and initiates the transmission process.
+*/
 void Collect_ADC_Complete(struct flags flags_temp)
 {
 	if (flags_temp.data_adc_collect) 
@@ -32,7 +39,13 @@ void Collect_ADC_Complete(struct flags flags_temp)
 	return;
 }
 
-
+/**
+@brief Generates a ramp waveform based on the specified parameters.
+@param ramp: Type of ramp waveform (RAMP1_COMMAND or RAMP2_COMMAND)
+@param ampl: Amplitude of the ramp waveform
+@retval None
+@note This function generates a ramp waveform based on the specified parameters.
+*/
 void Make_Ramp(uint8_t ramp, uint16_t ampl)
 {
 	if(ramp == RAMP1_COMMAND)
@@ -54,6 +67,12 @@ void Make_Ramp(uint8_t ramp, uint16_t ampl)
 	}
 	MODIFY_REG(DMA2_Channel3->CMAR, DMA_CMAR_MA, (uint32_t)(Triangle_DAC)); // Adress of buffer
 }
+/**
+@brief Enables DAC and ADC based on the specified flags.
+@param flags_temp: Temporary flags structure
+@retval None
+@note This function enables the DAC and ADC based on the specified flags.
+*/
 void Enable_DAC_ADC(struct flags flags_temp)
 {
 	if(flags_temp.en_adc_dac == 1)

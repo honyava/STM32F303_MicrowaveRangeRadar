@@ -1,44 +1,4 @@
-/* USER CODE BEGIN Header */
-/**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2023 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
-/* USER CODE END Header */
-/* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include <math.h>
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-
-/* USER CODE END Includes */
-
-/* Private typedef -----------------------------------------------------------*/
-/* USER CODE BEGIN PTD */
-/* USER CODE END PTD */
-
-/* Private define ------------------------------------------------------------*/
-/* USER CODE BEGIN PD */
-
-/* USER CODE END PD */
-
-/* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
-
-/* USER CODE END PM */
-
-/* Private variables ---------------------------------------------------------*/
 
 UART_HandleTypeDef huart1;
 OPAMP_HandleTypeDef hopamp1;
@@ -46,9 +6,6 @@ OPAMP_HandleTypeDef hopamp2;
 OPAMP_HandleTypeDef hopamp3;
 OPAMP_HandleTypeDef hopamp4;
 
-
-
-/* USER CODE BEGIN PV */
 volatile uint16_t Triangle_DAC[SIZE_BUFFER_DAC] = {0,};
 volatile uint32_t BUFF_ADC1_2[SIZE_BUFFER_ADC] = {0,};
 
@@ -60,15 +17,10 @@ volatile uint16_t message_size = 0;
 volatile uint8_t firstByteWait = 0;
 volatile uint16_t ampl = 4090;
 
-//struct message_ADC message_ADC12 = {0};
 uint8_t UART_command[SIZE_UART_RX];
 
 struct flags flags = {0};
 
-
-/* USER CODE END PV */
-
-/* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_OPAMP4_Init(void);
@@ -76,49 +28,19 @@ static void MX_OPAMP1_Init(void);
 static void MX_OPAMP2_Init(void);
 static void MX_OPAMP3_Init(void);
 static void MX_USART1_UART_Init(void);
-/* USER CODE BEGIN PFP */
 
-/* USER CODE END PFP */
-
-/* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
-
-/* USER CODE END 0 */
-
-/**
-  * @brief  The application entry point.
-  * @retval int
-  */
 int main(void)
 {
-  /* USER CODE BEGIN 1 */
-	
-	
-  /* USER CODE END 1 */
 
-  /* MCU Configuration--------------------------------------------------------*/
-
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
-
-  /* USER CODE BEGIN Init */
-
-  /* USER CODE END Init */
-
-  /* Configure the system clock */
   SystemClock_Config();
-
-  /* USER CODE BEGIN SysInit */
-
-  /* USER CODE END SysInit */
-  /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_OPAMP4_Init();
   MX_OPAMP1_Init();
   MX_OPAMP2_Init();
   MX_OPAMP3_Init();
   MX_USART1_UART_Init();
-  /* USER CODE BEGIN 2 */
+
 	Opamp_Start(OPAMP1);
 	Opamp_Start(OPAMP2);
 	Opamp_Start(OPAMP3);
@@ -134,13 +56,9 @@ int main(void)
 	firstByteWait = 1;
 	flags.en_adc_dac = 1;
 	HAL_UART_Receive_IT(&huart1, UART_command, sizeof(UART_command)/sizeof(uint8_t));
-  /* USER CODE END 2 */
 
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
   while (1)
   {
-
 		if ((UART_command[0] == START_COMMAND) && (UART_command[1] != 0))
 		{
 			Enable_DAC_ADC(flags);
@@ -157,19 +75,19 @@ int main(void)
 		}
 		else if(UART_command[0] == TEST_COMMAND)
 		{
-			UART_command[0] = 0; // make TEST 1 time
+			UART_command[0] = 0; 
 			HAL_UART_Transmit_IT(&huart1, (uint8_t*)"TEST", 4);
 		}
 		else if(UART_command[0] == RAMP1_COMMAND)
 		{
-			UART_command[0] = 0; // make TEST 1 time
+			UART_command[0] = 0; 
 			UART_command[1] = 0;
 			Make_Ramp(RAMP1_COMMAND, ampl);
 
 		}
 		else if(UART_command[0] == RAMP2_COMMAND)
 		{
-			UART_command[0] = 0; // make TEST 1 time
+			UART_command[0] = 0; 
 			UART_command[1] = 0;
 			Make_Ramp(RAMP2_COMMAND, ampl);
 			
@@ -177,17 +95,12 @@ int main(void)
 		else if(UART_command[0] == AMPL_COMMAND && flags.rx == 1) 
 		{
 			ampl = (UART_command[2]) + (UART_command[3] << 8);
-			UART_command[0] = UART_command[1]; // make TEST 1 time
+			UART_command[0] = UART_command[1]; 
 			UART_command[2] = 0;
 			UART_command[3] = 0;
 			flags.rx = 0;
 		}
-		
-    /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
 	}
-  /* USER CODE END 3 */
 }
 
 /**
@@ -243,15 +156,6 @@ void SystemClock_Config(void)
   */
 static void MX_OPAMP1_Init(void)
 {
-
-  /* USER CODE BEGIN OPAMP1_Init 0 */
-//	OPAMP_HandleTypeDef hopamp1;
-
-  /* USER CODE END OPAMP1_Init 0 */
-
-  /* USER CODE BEGIN OPAMP1_Init 1 */
-
-  /* USER CODE END OPAMP1_Init 1 */
   hopamp1.Instance = OPAMP1;
   hopamp1.Init.Mode = OPAMP_STANDALONE_MODE;
   hopamp1.Init.NonInvertingInput = OPAMP_NONINVERTINGINPUT_IO0;
@@ -262,10 +166,6 @@ static void MX_OPAMP1_Init(void)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN OPAMP1_Init 2 */
-
-  /* USER CODE END OPAMP1_Init 2 */
-
 }
 
 /**
@@ -275,14 +175,6 @@ static void MX_OPAMP1_Init(void)
   */
 static void MX_OPAMP2_Init(void)
 {
-
-  /* USER CODE BEGIN OPAMP2_Init 0 */
-//	OPAMP_HandleTypeDef hopamp2;
-  /* USER CODE END OPAMP2_Init 0 */
-
-  /* USER CODE BEGIN OPAMP2_Init 1 */
-
-  /* USER CODE END OPAMP2_Init 1 */
   hopamp2.Instance = OPAMP2;
   hopamp2.Init.Mode = OPAMP_STANDALONE_MODE;
   hopamp2.Init.NonInvertingInput = OPAMP_NONINVERTINGINPUT_IO0;
@@ -293,10 +185,6 @@ static void MX_OPAMP2_Init(void)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN OPAMP2_Init 2 */
-
-  /* USER CODE END OPAMP2_Init 2 */
-
 }
 
 /**
@@ -306,8 +194,6 @@ static void MX_OPAMP2_Init(void)
   */
 static void MX_OPAMP3_Init(void)
 {
-
-
   hopamp3.Instance = OPAMP3;
   hopamp3.Init.Mode = OPAMP_FOLLOWER_MODE;
   hopamp3.Init.NonInvertingInput = OPAMP_NONINVERTINGINPUT_IO0;
@@ -317,10 +203,6 @@ static void MX_OPAMP3_Init(void)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN OPAMP3_Init 2 */
-
-  /* USER CODE END OPAMP3_Init 2 */
-
 }
 
 /**
@@ -330,7 +212,6 @@ static void MX_OPAMP3_Init(void)
   */
 static void MX_OPAMP4_Init(void)
 {
-
   hopamp4.Instance = OPAMP4;
   hopamp4.Init.Mode = OPAMP_FOLLOWER_MODE;
   hopamp4.Init.NonInvertingInput = OPAMP_NONINVERTINGINPUT_IO3;
@@ -340,10 +221,6 @@ static void MX_OPAMP4_Init(void)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN OPAMP4_Init 2 */
-
-  /* USER CODE END OPAMP4_Init 2 */
-
 }
 
 /**
@@ -353,10 +230,8 @@ static void MX_OPAMP4_Init(void)
   */
 static void MX_USART1_UART_Init(void)
 {
-
 	NVIC_SetPriority(USART1_IRQn,2);
 
-  /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
   huart1.Init.BaudRate = UART_BAUD_RATE;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
@@ -371,10 +246,6 @@ static void MX_USART1_UART_Init(void)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN USART1_Init 2 */
-
-  /* USER CODE END USART1_Init 2 */
-
 }
 
 /**
@@ -403,7 +274,7 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 	
-	/*Configure GPIO pin : PB15 */   
+	/*Configure GPIO pin : PB15 */  
   GPIO_InitStruct.Pin = GPIO_PIN_15;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
@@ -415,17 +286,7 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-
 }
-
-/* USER CODE BEGIN 4 */
-
-
-
-
-
-/* USER CODE END 4 */
 
 /**
   * @brief  This function is executed in case of error occurrence.
@@ -433,13 +294,10 @@ static void MX_GPIO_Init(void)
   */
 void Error_Handler(void)
 {
-  /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
   while (1)
   {
   }
-  /* USER CODE END Error_Handler_Debug */
 }
 
 #ifdef  USE_FULL_ASSERT
