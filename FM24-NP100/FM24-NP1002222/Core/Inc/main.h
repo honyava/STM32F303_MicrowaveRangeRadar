@@ -8,18 +8,19 @@ extern "C" {
 #include "stm32f3xx_hal.h"
 #include "core_cm4.h"
 
-#define SYS_CLOCK     72000000   // 72MHz
-#define SIZE_BUFFER_ADC 128
-#define SIZE_BUFFER_DAC 128
-#define TIM2_ARR        500  //for DAC
-#define TIM8_ARR        125  //for ADC
-#define ADC_PER_DAC     TIM2_ARR/TIM8_ARR //#define ADC_PERIODS_PER_DAC_PERIOD
-#define FREQ_DAC        SYS_CLOCK/TIM2_ARR
-#define FREQ_ADC        SYS_CLOCK/TIM8_ARR
-#define MAX_DAC_PERIODS  4 
+#define SYS_CLOCK               72000000   // 72MHz
+#define SIZE_BUFFER_ADC           128
+#define SIZE_BUFFER_DAC           128
+#define SIZE_UART_RX               4
+#define TIM2_ARR                  500  //for DAC
+#define TIM8_ARR                  125  //for ADC
+#define ADC_PER_DAC        TIM2_ARR/TIM8_ARR //#define ADC_PERIODS_PER_DAC_PERIOD
+#define FREQ_DAC           SYS_CLOCK/TIM2_ARR
+#define FREQ_ADC           SYS_CLOCK/TIM8_ARR
+#define MAX_DAC_PERIODS            4 
 #define MAX_ADC_PERIODS  MAX_DAC_PERIODS*ADC_PER_DAC
-#define UART_BAUD_RATE 3000000
-#define SIZE_UART_RX 4
+#define UART_BAUD_RATE          3000000
+
 
 enum
 {
