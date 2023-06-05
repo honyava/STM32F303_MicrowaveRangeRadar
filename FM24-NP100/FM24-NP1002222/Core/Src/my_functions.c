@@ -1,4 +1,5 @@
 #include "main.h"
+
 extern UART_HandleTypeDef huart1;
 
 extern volatile uint16_t Triangle_DAC[SIZE_BUFFER_DAC];
@@ -25,16 +26,16 @@ void Collect_ADC_Complete(struct flags flags_temp)
 {
 	if (flags_temp.data_adc_collect) 
 	{
-		uint8_t period_number = period_number_dac;
-		uint16_t message_size = message_size = SIZE_BUFFER_ADC*count_dma_period*(sizeof(uint32_t) / sizeof(uint8_t)); //bytes;	
 		flags.data_adc_collect = 0;
-		count_dma_period = 0;
 		count_dac_period = 0;	
 		UART_command[0] = 0;
 		UART_command[1] = 0;
 		flags.en_adc_dac = 1;
-		message_ADC12.preamble = (start_byte) | (period_number << 8) | (message_size << 16);
-		HAL_UART_Transmit_IT(&huart1, (uint8_t*)&message_ADC12,  message_size + sizeof(message_ADC12.preamble));
+		message_ADC12.preamble.start_byte = start_byte;
+		message_ADC12.preamble.period_number = period_number_dac;
+		message_ADC12.preamble.message_size = SIZE_BUFFER_ADC*count_dma_period*(sizeof(uint32_t) / sizeof(uint8_t)); //bytes;
+		count_dma_period = 0;
+		HAL_UART_Transmit_IT(&huart1, (uint8_t*)&message_ADC12,  sizeof(message_ADC12));
 	}
 	return;
 }

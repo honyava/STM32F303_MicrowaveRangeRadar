@@ -15,8 +15,8 @@ extern "C" {
 #define TIM2_ARR                  500  //for DAC
 #define TIM8_ARR                  125  //for ADC
 #define ADC_PER_DAC        TIM2_ARR/TIM8_ARR //#define ADC_PERIODS_PER_DAC_PERIOD
-#define FREQ_DAC           SYS_CLOCK/TIM2_ARR
-#define FREQ_ADC           SYS_CLOCK/TIM8_ARR
+//#define FREQ_DAC           SYS_CLOCK/TIM2_ARR
+//#define FREQ_ADC           SYS_CLOCK/TIM8_ARR
 #define MAX_DAC_PERIODS            4 
 #define MAX_ADC_PERIODS  MAX_DAC_PERIODS*ADC_PER_DAC
 #define UART_BAUD_RATE          3000000
@@ -35,7 +35,12 @@ enum
 
 struct message_ADC
 {
-	uint32_t preamble;
+	struct preamble
+	{
+		uint8_t start_byte;
+		uint8_t period_number;
+		uint16_t message_size;
+	}preamble;
 	uint32_t BUFF[SIZE_BUFFER_ADC*MAX_ADC_PERIODS];  
 };
 
