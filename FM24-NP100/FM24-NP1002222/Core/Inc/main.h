@@ -14,7 +14,7 @@ extern "C" {
 #define SIZE_UART_RX               4
 #define TIM2_ARR                  500  //for DAC
 #define TIM8_ARR                  125  //for ADC
-#define ADC_PER_DAC        TIM2_ARR/TIM8_ARR //#define ADC_PERIODS_PER_DAC_PERIOD
+#define ADC_PER_DAC        TIM2_ARR/TIM8_ARR // ADC_PERIODS_PER_DAC_PERIOD
 //#define FREQ_DAC           SYS_CLOCK/TIM2_ARR
 //#define FREQ_ADC           SYS_CLOCK/TIM8_ARR
 #define MAX_DAC_PERIODS            4 
