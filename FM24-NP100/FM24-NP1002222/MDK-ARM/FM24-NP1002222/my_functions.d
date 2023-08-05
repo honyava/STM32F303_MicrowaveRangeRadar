@@ -1,6 +1,5 @@
-fm24-np1002222/stm32f3xx_hal_cortex.o: \
-  ..\Drivers\STM32F3xx_HAL_Driver\Src\stm32f3xx_hal_cortex.c \
-  ..\Drivers\STM32F3xx_HAL_Driver\Inc\stm32f3xx_hal.h \
+fm24-np1002222/my_functions.o: ..\Core\Src\my_functions.c \
+  ..\Core\Inc\main.h ..\Drivers\STM32F3xx_HAL_Driver\Inc\stm32f3xx_hal.h \
   ..\Core\Inc\stm32f3xx_hal_conf.h \
   ..\Drivers\STM32F3xx_HAL_Driver\Inc\stm32f3xx_hal_rcc.h \
   ..\Drivers\STM32F3xx_HAL_Driver\Inc\stm32f3xx_hal_def.h \
